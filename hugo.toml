@@ -1,0 +1,64 @@
+baseurl = "/"
+languageCode = 'en-us'
+title = "gabrielaleks.com"
+theme = "nightfall"
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+
+[pagination]
+pagerSize = 10
+
+[menu]
+[[menu.header]]
+name = "blog"
+weight = 0
+url = "blog"
+[[menu.header]]
+name = "about"
+weight = 1
+url = "about"
+
+[params]
+user = "gabriel"
+hostname = "aleks.com"
+
+openLinksInNewTab = true
+
+displayDateFormat = "02.01.2006"
+footerHtml = "© 2026 gabrielaleks.com"
+showMetadata = true                    # Master switch for all metadata display
+showPublishedDate = true               # Show published date on post page
+showReadingTime = true                 # Show reading time on post page
+showTags = true                        # Show tags on post page
+showAuthors = true                     # Show authors on post page
+showCategories = true                  # Show categories on post page
+
+[params.author]
+name = "Gabriel Aleks" #
+title = "Welcome to my digital garden 🪴" #
+email = "gabriel.aleks19@gmail.com"     # RSS feed email address
+
+[[params.social]]
+key = 0
+name = "[ github ]"
+url = "https://github.com/gabrielaleks"
+target = "_blank"
+aria = "GitHub Profile"
+
+[[params.social]]
+key = 1
+name = "[ linkedin ]"
+url = "https://www.linkedin.com/in/gabrielaleks"
+aria = "LinkedIn Profile"
+
+[[params.social]]
+key = 2
+name = "[ email ]"
+url = "mailto:gabriel.aleks19@gmail.com"
+aria = "My e-Mail Address"
+
+[params.styles]
+color = "red"
