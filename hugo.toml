@@ -3,6 +3,8 @@ languageCode = 'en-us'
 title = "gabrielaleks.com"
 theme = "nightfall"
 
+enableEmoji = true
+
 [markup]
 [markup.goldmark]
 [markup.goldmark.renderer]
@@ -57,7 +59,7 @@ aria = "LinkedIn Profile"
 [[params.social]]
 key = 2
 name = "[ email ]"
-url = "mailto:gabriel.aleks19@gmail.com"
+url = "mailto:hi@gabrielaleks.com"
 aria = "My e-Mail Address"
 
 [params.styles]
