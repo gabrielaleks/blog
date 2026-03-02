@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Index on gabrielaleks.com</title>
-    <link>//localhost:1313/tags/index/</link>
-    <description>Recent content in Index on gabrielaleks.com</description>
+    <title>Homelab on gabrielaleks.com</title>
+    <link>//localhost:1313/categories/homelab/</link>
+    <description>Recent content in Homelab on gabrielaleks.com</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>gabriel.aleks19@gmail.com (Gabriel Aleks)</managingEditor>
     <webMaster>gabriel.aleks19@gmail.com (Gabriel Aleks)</webMaster>
     <lastBuildDate>Sat, 28 Feb 2026 00:00:00 +0000</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/index/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:1313/categories/homelab/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Blog</title>
-      <link>//localhost:1313/blog/</link>
+      <title>Creating a homelab</title>
+      <link>//localhost:1313/blog/emoji-support/</link>
       <pubDate>Sat, 28 Feb 2026 00:00:00 +0000</pubDate><author>gabriel.aleks19@gmail.com (Gabriel Aleks)</author>
-      <guid>//localhost:1313/blog/</guid>
-      <description></description>
+      <guid>//localhost:1313/blog/emoji-support/</guid>
+      <description>&lt;p&gt;Emoji can be enabled in a Hugo project in a number of ways.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

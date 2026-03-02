@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Shortcodes on gabrielaleks.com</title>
-    <link>//localhost:1313/tags/shortcodes/</link>
+    <link>//localhost:58952/tags/shortcodes/</link>
     <description>Recent content in Shortcodes on gabrielaleks.com</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <managingEditor>gabriel.aleks19@gmail.com (Gabriel Aleks)</managingEditor>
     <webMaster>gabriel.aleks19@gmail.com (Gabriel Aleks)</webMaster>
     <lastBuildDate>Sun, 10 Mar 2019 00:00:00 +0000</lastBuildDate>
-    <atom:link href="//localhost:1313/tags/shortcodes/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="//localhost:58952/tags/shortcodes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Rich Content</title>
-      <link>//localhost:1313/blog/rich-content/</link>
+      <link>//localhost:58952/blog/rich-content/</link>
       <pubDate>Sun, 10 Mar 2019 00:00:00 +0000</pubDate><author>gabriel.aleks19@gmail.com (Gabriel Aleks)</author>
-      <guid>//localhost:1313/blog/rich-content/</guid>
+      <guid>//localhost:58952/blog/rich-content/</guid>
       <description>&lt;p&gt;Hugo ships with several &#xA;&lt;a href=&#34;https://gohugo.io/content-management/shortcodes/#embedded&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Embedded Shortcodes&lt;/a&gt;&#xA; for rich content, along with a &#xA;&lt;a href=&#34;https://gohugo.io/about/hugo-and-gdpr/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Privacy Config&lt;/a&gt;&#xA; and a set of Simple Shortcodes that enable static and no-JS versions of various social media embeds.&lt;/p&gt;</description>
     </item>
   </channel>

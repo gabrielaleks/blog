@@ -8,19 +8,12 @@
     <language>en-us</language>
     <managingEditor>gabriel.aleks19@gmail.com (Gabriel Aleks)</managingEditor>
     <webMaster>gabriel.aleks19@gmail.com (Gabriel Aleks)</webMaster>
-    <lastBuildDate>Mon, 11 Mar 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 28 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="//localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Syntax</title>
-      <link>//localhost:1313/categories/syntax/</link>
-      <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><author>gabriel.aleks19@gmail.com (Gabriel Aleks)</author>
-      <guid>//localhost:1313/categories/syntax/</guid>
-      <description></description>
-    </item>
     <item>
       <title>Themes</title>
       <link>//localhost:1313/categories/themes/</link>
-      <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><author>gabriel.aleks19@gmail.com (Gabriel Aleks)</author>
+      <pubDate>Sat, 28 Feb 2026 00:00:00 +0000</pubDate><author>gabriel.aleks19@gmail.com (Gabriel Aleks)</author>
       <guid>//localhost:1313/categories/themes/</guid>
       <description></description>
     </item>

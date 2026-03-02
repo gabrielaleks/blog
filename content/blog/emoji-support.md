@@ -1,10 +1,14 @@
 +++
-author = "Hugo Authors"
-title = "Emoji Support"
-date = "2019-03-05"
-description = "Guide to emoji usage in Hugo"
+author = "Gabriel Aleksandravicius"
+title = "Creating a homelab"
+date = "2026-02-28"
+description = "Tutorial on how I created my homelab"
 tags = [
-    "emoji",
+  "tag",
+]
+categories = [
+    "themes",
+    "homelab"
 ]
 +++
 

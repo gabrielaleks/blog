@@ -41,9 +41,23 @@
     {{ if eq .Site.Params.showCategories false }}{{ $showCategories = false }}{{ end }}
     {{ if eq .Params.showCategories false }}{{ $showCategories = false }}{{ end }}
 
-    {{ if $showMetadata }}
+    {{/* Compute whether there is anything to show */}}
+    {{ $hasMetadata := false }}
+    {{ if and $showPublished (not .Date.IsZero) }}{{ $hasMetadata = true }}{{ end }}
+    {{ if and $showTags (.GetTerms "tags") }}{{ $hasMetadata = true }}{{ end }}
+    {{ if and $showAuthors (.GetTerms "authors") }}{{ $hasMetadata = true }}{{ end }}
+    {{ if and $showCategories (.GetTerms "categories") }}{{ $hasMetadata = true }}{{ end }}
+    {{ if $showReadingTime }}{{ $hasMetadata = true }}{{ end }}
+
+    {{ if and $showMetadata $hasMetadata }}
     <section class="postMetadata">
         <dl>
+            {{ if and $showPublished (not .Date.IsZero) }}
+            <dt>{{ i18n "published" }}</dt>
+            {{ $layout := .Site.Params.displayDateFormat | default "2006-01-02" }}
+            {{ $iso := .Date | time.Format "2006-01-02" }}
+            <dd><time datetime="{{ $iso }}">{{ .Date | time.Format $layout }}</time></dd>
+            {{ end }}
             {{ if and $showTags (.GetTerms "tags") }}
                 {{ partial "taxonomy/tags.html" (.GetTerms "tags") }}
             {{ end }}
@@ -52,12 +66,6 @@
             {{ end }}
             {{ if and $showCategories (.GetTerms "categories") }}
                 {{ partial "taxonomy/categories.html" (.GetTerms "categories") }}
-            {{ end }}
-            {{ if $showPublished }}
-                <dt>{{ i18n "published" }}</dt>
-                 {{ $layout := .Site.Params.displayDateFormat | default "2006-01-02" }}
-                 {{ $iso := .Date | time.Format "2006-01-02" }}
-                 <dd><time datetime="{{ $iso }}">{{ .Date | time.Format $layout }}</time></dd>
             {{ end }}
             {{ if $showReadingTime }}
                 <dt>{{ i18n "reading_time" }}</dt>
