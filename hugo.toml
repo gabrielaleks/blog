@@ -24,6 +24,7 @@ weight = 1
 url = "about"
 
 [params]
+title = "Welcome to my digital garden 🪴"
 user = "gabriel"
 hostname = "aleks.com"
 
@@ -40,7 +41,6 @@ showCategories = true                  # Show categories on post page
 
 [params.author]
 name = "Gabriel Aleks" #
-title = "Welcome to my digital garden 🪴" #
 email = "gabriel.aleks19@gmail.com"     # RSS feed email address
 
 [[params.social]]
