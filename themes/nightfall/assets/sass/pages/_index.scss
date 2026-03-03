@@ -1,3 +1,5 @@
+@use "../utils/variables" as v;
+
 .indexWrapper {
     display: flex;
     flex-direction: column;
@@ -6,6 +8,11 @@
 
 .indexHeader {
     font-size: 3em;
+
+    @media screen and (max-width: v.$breakLarge) {
+        padding: 0 1rem;
+        font-size: 2em;
+    }
 }
 
 /* Avatar sizes (default is M) - XS, S, M, L, XL */

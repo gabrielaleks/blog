@@ -1,23 +1,26 @@
 @use "../utils/variables" as v;
 
 .postDate {
-  float: right;
   color: v.$white;
+  flex-shrink: 0;
+  margin-left: 1rem;
+  white-space: nowrap;
 }
 
 .postTitle {
-  
   @include v.primary-color;
 
   text-decoration: none;
   text-transform: capitalize;
   font-family: v.$fontHeader;
   font-size: 1.2em;
-  float: left;
+  min-width: 0;
 }
 
 .postHeader {
-  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
 }
 
 .postsList {
