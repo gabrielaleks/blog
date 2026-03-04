@@ -1,7 +1,7 @@
 +++
 author = "Gabriel Aleksandravicius"
 title = "Building a VPN-first homelab on a Raspberry Pi"
-date = "2026-03-03"
+date = "2026-03-02"
 summary = "Part 1 of the homelab series: setting up a Raspberry Pi with Tailscale for secure, private remote access."
 tags = [
   "raspberry-pi",
