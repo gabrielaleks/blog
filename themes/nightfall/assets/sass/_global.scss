@@ -17,7 +17,7 @@ a {
 
 pre code {
   font-family: v.$fontCode;
-  font-size: 75%;
+  font-size: 100%;
   display: block;
   background: v.$backgroundDarker;
   padding: 10px;
@@ -26,13 +26,29 @@ pre code {
 
 code {
   font-family: v.$fontCode;
-  font-size: 75%;
+  font-size: 100%;
 }
 
 @for $i from 1 through 6 {
   h#{$i} {
     font-family: v.$fontHeader;
   }
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+}
+
+figure {
+  text-align: center;
+  margin: 1.5rem auto;
+}
+
+figcaption {
+  font-size: 0.8em;
+  color: #999;
+  margin-top: 0.4rem;
 }
 
 @-ms-viewport{
