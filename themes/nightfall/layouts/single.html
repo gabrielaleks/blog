@@ -5,8 +5,8 @@
 {{ define "main" }}
 <div class="postWrapper">
     <h1>{{ .Title }}</h1>
-    {{ if .Summary}}
-        <p>{{.Summary}}</p>
+    {{ if .Params.summary}}
+        <p>{{.Params.summary}}</p>
     {{ end }}
 
     {{ if .Description}}
