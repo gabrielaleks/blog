@@ -1,15 +1,7 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Creating a homelab"
-date = "2026-02-28"
-description = "Tutorial on how I created my homelab"
-tags = [
-  "tag",
-]
-categories = [
-    "themes",
-    "homelab"
-]
+title = "Emojis"
+date = "2030-02-28"
 +++
 
 Emoji can be enabled in a Hugo project in a number of ways. 
