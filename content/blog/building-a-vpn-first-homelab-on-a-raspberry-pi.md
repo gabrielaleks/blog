@@ -37,7 +37,7 @@ The tradeoff is raw performance — you won't be running anything compute-heavy 
 
 Check my current setup below:
 
-{{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberr-pi/current-setup.jpeg" alt="My current setup">}}
+{{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberry-pi/current-setup.jpeg" alt="My current setup">}}
 
 My setup has the following items:
 - [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)
@@ -54,7 +54,7 @@ I'm not going to go deep on the initial Pi setup since the [official documentati
 For SSH, the Raspberry Pi Imager lets you pre-configure both before flashing the SD card. Set a username, password, and enable SSH from the "Advanced options" menu. This way you can plug the Pi in headlessly — no monitor, no keyboard — and SSH straight into it.
 
 {{< figure 
-  src="/images/building-a-vpn-first-homelab-on-a-raspberr-pi/ssh-rasp.png" 
+  src="/images/building-a-vpn-first-homelab-on-a-raspberry-pi/ssh-rasp.png" 
   alt="Raspberry Pi SSH" 
   caption="The Raspberry Pi Imager lets you configure SSH before flashing." 
 >}}
@@ -102,7 +102,7 @@ All traffic between tailnet devices is end-to-end encrypted using WireGuard's cr
 
 Check out the ["What is Tailscale"](https://tailscale.com/docs/concepts/what-is-tailscale) page for more info on how it works.
 
-{{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberr-pi/setup-diagram.png" alt="Tailscale setup diagram">}}
+{{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberry-pi/setup-diagram.png" alt="Tailscale setup diagram">}}
 
 Installing it on the Pi is two commands:
 
@@ -127,7 +127,7 @@ ssh alekspi@kaos
 
 That works from my laptop at home, from a coffee shop, from my phone on mobile data — anywhere Tailscale is running.
 
-{{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberr-pi/tailnet-machines.png" alt="Machines connected to Tailnet" caption="These are the devices connected to my tailnet. You can check this on https://login.tailscale.com/admin/machines." >}}
+{{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberry-pi/tailnet-machines.png" alt="Machines connected to Tailnet" caption="These are the devices connected to my tailnet. You can check this on https://login.tailscale.com/admin/machines." >}}
 
 And the nginx container from earlier? Instead of `192.168.178.39:8080`, I can now access it at:
 
