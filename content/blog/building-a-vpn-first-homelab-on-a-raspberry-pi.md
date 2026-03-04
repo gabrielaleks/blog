@@ -2,32 +2,32 @@
 author = "Gabriel Aleksandravicius"
 title = "Building a VPN-first homelab on a Raspberry Pi"
 date = "2026-03-03"
-summary = "Part 1 of the KAOS homelab series: setting up a Raspberry Pi with Tailscale for secure, private remote access."
+summary = "Part 1 of the homelab series: setting up a Raspberry Pi with Tailscale for secure, private remote access."
 tags = [
   "raspberry-pi",
   "tailscale",
   "docker",
-  "homelab",
+  "homeserver",
   "self-hosting",
 ]
 categories = [
-    "homeserver"
+  "homelab"
 ]
 +++
 
 A few months ago I started thinking about a small electronics project: a sensor on my mailbox that would notify me when new mail arrived. Nothing fancy — a microcontroller, a magnetic reed switch, a push notification to my phone.
 
-But then I started thinking bigger. If I'm building a notification system anyway, why not a grocery list app too? I'd been wanting to build one for a while. With a home server in place, I could also integrate automated garden irrigation, smart lighting controlled via Matter and Zigbee protocols and other home automations - a place to run and monitor all these little projects.
+But then I started thinking bigger. If I'm building a notification system anyway, why not a grocery list app too? I'd been wanting to build one for a while to keep track of my expenses. I also wanted to integrate automated garden irrigation, smart lighting controlled via Matter and Zigbee protocols and other home automations.
 
 That's how KAOS started: not with a grand vision but by following one idea until it became several. I needed a centralized environment for all of this, which meant setting up a homelab.
 
 ## Why a Raspberry Pi?
 
-There are a few ways to run a home server. You could rent a cloud VM (cheap, but you're paying forever and giving up physical ownership). You could repurpose an old laptop or desktop (free, but noisy, power-hungry, and you might actually want that machine back someday). Or you could use a Raspberry Pi.
+There are a few ways to run a home server. You could rent a cloud VM (cheap, but you're paying forever and giving up physical ownership). You could repurpose an old laptop or desktop (free, but noisy, power-hungry and you might actually want that machine back someday). Or you could use a Raspberry Pi.
 
 The Pi made sense to me for a few reasons:
 
-- **Power draw**: A Raspberry Pi 4 draws around 3–5W under typical load. Running it 24/7 adds maybe €5/month to my electricity bill. A desktop under light load draws 10–20x that.
+- **Power draw**: A Raspberry Pi 4 draws around 3–5W under typical load. Running it 24/7 adds maybe 5 CHF/month to my electricity bill. A desktop under light load draws 10–20x that.
 - **Size**: It fits in my hand. I mounted it next to my router and forgot it was there.
 - **Always-on**: No sleep mode, no spinning fans to fail, no display to burn in. It just runs.
 - **Learning experience**: I’d been wanting to set up a home server for a long time and finally used it as an excuse to dive into a bunch of new technologies.
@@ -39,7 +39,7 @@ Check my current setup below:
 
 {{< figure src="/images/building-a-vpn-first-homelab-on-a-raspberry-pi/current-setup.jpeg" alt="My current setup">}}
 
-My setup has the following items:
+It has the following items:
 - [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)
 - [Joy-it Acrylic case with fan](https://www.digitec.ch/en/s1/product/joy-it-acrylic-case-with-fan-for-raspberry-pi-4-development-board-accessories-11621552)
 - [Ugreen USB 3.0 to SATA 3.0 adapter for 2.5" SATA SSD](https://www.digitec.ch/en/s1/product/ugreen-usb-30-to-sata-30-adapter-for-25-sata-ssd-hdd-ssd-hard-drive-accessories-20840525)
@@ -59,7 +59,7 @@ For SSH, the Raspberry Pi Imager lets you pre-configure both before flashing the
   caption="The Raspberry Pi Imager lets you configure SSH before flashing." 
 >}}
 
-For a static IP, I configured a DHCP reservation on my router, telling it to always assign the same IP to the Pi's MAC address. This is cleaner than hardcoding a static IP on the Pi itself, because the Pi's network config stays simple and the router stays the single source of truth. My Pi lives at `192.168.178.39`.
+For a static IP, I set up a DHCP reservation on my FRITZ!Box 5530 Fiber. It's as easy as checking an "Assign permanent IPv4 address" box. This is cleaner than hardcoding a static IP on the Pi itself: the Pi's network config stays simple and the router stays the single source of truth. My Pi lives at 192.168.178.39.
 
 I can SSH in with:
 
