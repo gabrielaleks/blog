@@ -1,7 +1,7 @@
 +++
 author = "Gabriel Aleksandravicius"
 title = "From ports to subdomains — Pi-hole + Traefik"
-date = "2026-03-04"
+date = "2026-03-03T09:00:00Z"
 summary = "Part 2 of the homelab series: replacing port-based access with clean subdomain routing using Pi-hole for DNS and Traefik as a reverse proxy."
 tags = [
   "pi-hole",
