@@ -146,4 +146,4 @@ At this point the setup looks like this:
 - MagicDNS enabled — all my devices can reach the Pi by name
 - Services accessible at `kaos:<port>` from any tailnet device, with no public ports open
 
-This is a solid foundation. But `kaos:8080`, `kaos:3000`, `kaos:9000` is still not ideal. Remembering which service lives on which port gets old fast, and there's no HTTPS anywhere. In the next post, I'll add Pi-hole to set up proper DNS so I can reach services at clean addresses like `portainer.kaoshome.dev` instead.
+This is a solid foundation. But `kaos:8080`, `kaos:3000`, `kaos:9000` is still not ideal. Remembering which service lives on which port gets old fast, and there's no HTTPS anywhere. In the next post, I'll set up Pi-hole as a DNS server and Traefik as a reverse proxy — together they replace port numbers with clean subdomain addresses like `portainer.kaoshome.dev`.
