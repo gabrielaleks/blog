@@ -1,5 +1,5 @@
 [build]
-  command = "npm install && hugo --gc --minify"
+  command = "curl -SL https://github.com/sass/dart-sass/releases/download/1.97.3/dart-sass-1.97.3-linux-x64.tar.gz | tar -xzf - && export PATH=$PATH:$(pwd)/dart-sass && hugo --gc --minify"
 
 [build.environment]
   HUGO_VERSION = "0.157.0"
