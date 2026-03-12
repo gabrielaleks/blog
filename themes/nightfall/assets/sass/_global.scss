@@ -27,6 +27,7 @@ pre code {
 code {
   font-family: v.$fontCode;
   font-size: 100%;
+  word-break: break-all;
 }
 
 @for $i from 1 through 6 {
