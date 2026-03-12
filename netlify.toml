@@ -1,5 +1,7 @@
+[build]
+  command = "npm install && hugo --gc --minify"
+
 [build.environment]
-  DART_SASS_VERSION = "1.97.3"
   HUGO_VERSION = "0.157.0"
   HUGO_EXTENDED = "true"
   HUGO_ENV = "production"
