@@ -4,6 +4,19 @@
 
 {{ define "main" }}
 <div class="postWrapper">
+    {{ if eq .Section "blog" }}
+    <nav class="postNav">
+        {{ if .PrevInSection }}
+        <a href="{{ .PrevInSection.Permalink }}" class="postNav__link postNav__link--prev">&lt; previous</a>
+        {{ else }}
+        <span></span>
+        {{ end }}
+        {{ if .NextInSection }}
+        <a href="{{ .NextInSection.Permalink }}" class="postNav__link postNav__link--next">next &gt;</a>
+        {{ end }}
+    </nav>
+    {{ end }}
+    
     <h1>{{ .Title }}</h1>
     {{ if .Params.summary}}
         <p>{{.Params.summary}}</p>
@@ -81,5 +94,18 @@
     <div>
         {{ .Content }}
     </div>
+
+    {{ if eq .Section "blog" }}
+    <nav class="postNav">
+        {{ if .PrevInSection }}
+        <a href="{{ .PrevInSection.Permalink }}" class="postNav__link postNav__link--prev">&lt; previous</a>
+        {{ else }}
+        <span></span>
+        {{ end }}
+        {{ if .NextInSection }}
+        <a href="{{ .NextInSection.Permalink }}" class="postNav__link postNav__link--next">next &gt;</a>
+        {{ end }}
+    </nav>
+    {{ end }}
 </div>
 {{ end }}
