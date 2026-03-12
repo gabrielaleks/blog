@@ -10,6 +10,7 @@ tags = [
   "docker",
   "homelab",
   "self-hosting",
+  "raspberry-pi"
 ]
 categories = [
   "homelab"

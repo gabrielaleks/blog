@@ -10,6 +10,7 @@ tags = [
   "docker",
   "homelab",
   "self-hosting",
+  "raspberry-pi"
 ]
 categories = [
   "homelab"
@@ -187,4 +188,4 @@ After setting up these two services, the pattern is clear. For any new service:
 - Does it need host-level capabilities? Use `cap_add` with only what's required.
 - Does it sit behind a proxy that modifies headers? Configure trusted proxies.
 
-In the next post, Lista, a multi-container app I built myself, pushes this pattern a bit further: multiple containers (backend, frontend, database + migrations), path-based routing and an isolated internal network that the database never leaves.
+In the next post, I deploy Lista — a multi-container app I built myself. It follows the same pattern, but adds a few wrinkles: path-based routing to split traffic between frontend and backend under the same hostname, an isolated internal network that the database never leaves, and a fully automated deployment pipeline using GitHub Actions and the Tailscale GitHub Action to push new images to a server that's never publicly exposed.
