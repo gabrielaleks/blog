@@ -21,21 +21,19 @@
 {{- if .IsPage -}}
   {{ $base := resources.Get "images/og_base.png" }}
   {{ $font := resources.Get "fonts/FiraMono-Medium.ttf" }}
-  {{ if and $base $font }}
-    {{ $img := $base.Filter (images.Text .Page.Title (dict
-      "color" "#ffffff"
-      "size" 56
-      "linespacing" 10
-      "x" 141
-      "y" 270
-      "font" $font
-    ))}}
-    {{ $img = resources.Copy (path.Join .Page.RelPermalink "og.png") $img }}
-    <meta property="og:image" content="{{$img.Permalink}}">
-    <meta property="og:image:width" content="{{$img.Width}}" />
-    <meta property="og:image:height" content="{{$img.Height}}" />
-    <meta name="twitter:image" content="{{$img.Permalink}}" />
-  {{ end }}
+  {{ $img := $base.Filter (images.Text .Page.Title (dict
+    "color" "#ffffff"
+    "size" 56
+    "linespacing" 10
+    "x" 70
+    "y" 270
+    "font" $font
+  ))}}
+  {{ $img = resources.Copy (path.Join .Page.RelPermalink "og.png") $img }}
+  <meta property="og:image" content="{{$img.Permalink}}">
+  <meta property="og:image:width" content="{{$img.Width}}" />
+  <meta property="og:image:height" content="{{$img.Height}}" />
+  <meta name="twitter:image" content="{{$img.Permalink}}" />
 
   <!-- Twitter metadata (used by other websites as well) -->
   <meta name="twitter:card" content="summary_large_image" />
