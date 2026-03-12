@@ -32,3 +32,20 @@ dd {
 dt::after {
     content: ":";
 }
+
+.postNav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid v.$backgroundDarker;
+    font-family: v.$fontCode;
+
+    &__link {
+        text-decoration: none;
+
+        &:hover {
+            @include v.primary-color;
+        }
+    }
+}
