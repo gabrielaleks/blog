@@ -19,16 +19,17 @@
             <main class="main">
                 <div class="indexWrapper">
                     {{ if .Site.Params.author.avatarFirst }}
-                        {{ partial "avatar.html" . }}
+                    {{ partial "avatar.html" . }}
                     {{ end }}
                     <div>
-                        <h1 class="indexHeader">{{ .Site.Params.title }}</h1>
+                        <h1 class="indexHeader">{{ .Site.Params.title }} <span class="plant">🪴</span>
+                        </h1>
                     </div>
                     {{ if not .Site.Params.author.avatarFirst }}
-                        {{ partial "avatar.html" . }}
+                    {{ partial "avatar.html" . }}
                     {{ end }}
                     {{ if isset .Site.Params "social" }}
-                        {{ partial "social.html" . }}
+                    {{ partial "social.html" . }}
                     {{ end }}
                 </div>
             </main>
@@ -38,6 +39,18 @@
         {{ partial "footer.html" . }}
     </div>
 
+    <script>
+        var plant = document.querySelector('.plant');
+        if (plant) {
+            function startSway() {
+                plant.classList.remove('sway');
+                void plant.offsetWidth;
+                plant.classList.add('sway');
+            }
+            plant.addEventListener('mouseenter', startSway);
+            plant.addEventListener('click', startSway);
+        }
+    </script>
 </body>
 
 </html>
