@@ -27,4 +27,5 @@ Live app: gabrielaleks.com
 - [ ] Add simple animations:
   - [ ] Hover over header items should make them pop a bit + show background
   - [ ] Add animation to plant on main page
+  - [ ] Add hover animation on blog page when overing posts
 - [ ] Search tool
