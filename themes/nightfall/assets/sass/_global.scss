@@ -33,6 +33,23 @@ code {
 @for $i from 1 through 6 {
   h#{$i} {
     font-family: v.$fontHeader;
+    scroll-margin-top: 1rem;
+
+    &.heading-anchor-wrapper {
+      .heading-anchor {
+        opacity: 0;
+        margin-right: 0.4em;
+        // font-size: 1em;
+        text-decoration: none;
+        transition: opacity 0.15s;
+        @include v.primary-color;
+      }
+
+      &:hover .heading-anchor {
+        opacity: 1;
+        text-decoration: underline;
+      }
+    }
   }
 }
 

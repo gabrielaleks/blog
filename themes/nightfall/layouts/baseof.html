@@ -11,7 +11,6 @@
 </head>
 
 <body>
-
     <div class="flexWrapper">
         {{ partial "header.html" . }}
 
@@ -26,6 +25,15 @@
         {{ partial "footer.html" . }}
     </div>
 
+    <script>
+        var nav = document.querySelector('.headerLinks');
+        if (nav) nav.style.pointerEvents = 'none';
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                if (nav) nav.style.pointerEvents = '';
+            });
+        });
+    </script>
 </body>
 
 </html>
