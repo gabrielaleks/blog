@@ -26,6 +26,6 @@ Live app: gabrielaleks.com
 - [X] Add anchor next to md headers
 - [ ] Add simple animations:
   - [X] Hover over header items should make them pop a bit + show background
-  - [ ] Add animation to plant on main page
-  - [ ] Add hover animation on blog page when overing posts
+  - [X] Add animation to plant on main page
+  - [X] Add hover animation on blog page when hovering posts
 - [ ] Search tool
