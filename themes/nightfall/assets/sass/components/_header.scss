@@ -33,7 +33,7 @@
         padding: 4px 8px;
         border-radius: 15px;
         font-size: 1em;
-        body.ready & { transition: font-size 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
+        transition: font-size 0.15s ease, background-color 0.15s ease;
 
         &:hover {
           font-size: 1.03em;
