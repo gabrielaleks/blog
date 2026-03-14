@@ -11,7 +11,7 @@
             <ul>
                 {{ range .Site.Menus.header }}
                 <li>
-                    <a href="{{ .URL | absLangURL }}" title="{{ .Title }}" >
+                    <a href="{{ .URL | absLangURL }}" title="{{ .Title }}"{{ if strings.HasPrefix $.RelPermalink (printf "/%s" .URL) }} class="active"{{ end }}>
                         ~/{{- .Name -}}
                     </a>
                 </li>

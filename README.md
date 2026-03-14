@@ -23,9 +23,9 @@ Live app: gabrielaleks.com
 ### Future features (?)
 - [ ] Add ~/projects: list of projects with image, small description and link to repository
 - [ ] Add ~/categories or ~/tags
-- [ ] Add anchor next to md headers
+- [X] Add anchor next to md headers
 - [ ] Add simple animations:
-  - [ ] Hover over header items should make them pop a bit + show background
+  - [X] Hover over header items should make them pop a bit + show background
   - [ ] Add animation to plant on main page
   - [ ] Add hover animation on blog page when overing posts
 - [ ] Search tool
