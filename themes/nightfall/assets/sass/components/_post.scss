@@ -31,6 +31,11 @@
   padding: 20px;
   background-color: v.$black;
   margin-bottom: 20px;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
 }
 
 .postListLink:hover {
