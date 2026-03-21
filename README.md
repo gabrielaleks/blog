@@ -21,10 +21,11 @@ Live app: gabrielaleks.com
 - Creating and deploying a blog with Hugo + Netlify
 
 ### Future features (?)
-- [ ] Add ~/projects: list of projects with image, small description and link to repository
-- [ ] Add ~/categories or ~/tags
+- [X] Add ~/projects: list of projects with image, small description and link to repository
+- [X] Add ~/digest
+- [X] Add ~/categories or ~/tags
 - [X] Add anchor next to md headers
-- [ ] Add simple animations:
+- [X] Add simple animations:
   - [X] Hover over header items should make them pop a bit + show background
   - [X] Add animation to plant on main page
   - [X] Add hover animation on blog page when hovering posts

@@ -15,13 +15,25 @@ pagerSize = 10
 
 [menu]
 [[menu.header]]
-name = "blog"
-weight = 0
-url = "blog"
-[[menu.header]]
 name = "about"
 weight = 1
 url = "about"
+[[menu.header]]
+name = "blog"
+weight = 2
+url = "blog"
+[[menu.header]]
+name = "tags"
+weight = 3
+url = "tags"
+[[menu.header]]
+name = "projects"
+weight = 4
+url = "projects"
+[[menu.header]]
+name = "digest"
+weight = 5
+url = "digest"
 
 [params]
 title = "Welcome to my digital garden"

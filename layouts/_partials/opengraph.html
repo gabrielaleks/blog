@@ -18,7 +18,7 @@
 {{ end }}{{ end }}
 
 {{/* Generate opengraph image */}}
-{{- if .IsPage -}}
+{{- if or .IsPage .IsSection .IsHome -}}
   {{ $base := resources.Get "images/og_base.png" }}
   {{ $font := resources.Get "fonts/FiraMono-Medium.ttf" }}
   {{ $img := $base.Filter (images.Text .Page.Title (dict

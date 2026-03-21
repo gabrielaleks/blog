@@ -1,0 +1,44 @@
+{{ define "title" }}
+{{ .Title }} | {{ .Site.Params.author.name }}
+{{ end }}
+
+{{ define "main" }}
+<div class="postWrapper">
+  <div class="listHeader">
+    <h1>{{ .Title }}</h1>
+  </div>
+
+  {{ with .Content }}
+  <div class="listContent">
+    {{- . -}}
+  </div>
+  {{ end }}
+
+  {{ $projects := .RegularPages }}
+
+  {{ if not $projects }}
+  <p>No projects yet.</p>
+  {{ else }}
+  <div class="projectGrid">
+    {{ range $projects }}
+    <a class="projectCard" href="{{ .Params.project_url }}" target="_blank" rel="noopener">
+      {{ if .Params.image }}
+      <img class="projectImage" src="{{ .Params.image }}" alt="{{ .Title }}">
+      {{ else }}
+      <div class="projectImagePlaceholder">[ {{ .Title }} ]</div>
+      {{ end }}
+      <div class="projectMeta">
+        <p class="projectTitle">{{ .Title }}</p>
+        <p class="projectDescription">{{ .Params.description | default .Summary }}</p>
+        {{ with .Params.tech }}
+        <div class="projectTags">
+          {{ range . }}<span class="projectTag">{{ . }}</span>{{ end }}
+        </div>
+        {{ end }}
+      </div>
+    </a>
+    {{ end }}
+  </div>
+  {{ end }}
+</div>
+{{ end }}
