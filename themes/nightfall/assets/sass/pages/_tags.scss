@@ -1,0 +1,37 @@
+@use "../utils/variables" as v;
+@use "hugo:vars" as h;
+@use "sass:map";
+
+$_accent: if(map.has-key(v.$primary-colors, h.$color), map.get(v.$primary-colors, h.$color), #{h.$color});
+
+.tagPool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tagBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid $_accent;
+  color: $_accent;
+  background-color: transparent;
+  font-family: v.$fontHeader;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background-color: $_accent;
+    color: v.$white;
+    text-decoration: none;
+  }
+}
+
+.tagCount {
+  font-size: 0.8em;
+  opacity: 0.75;
+}
