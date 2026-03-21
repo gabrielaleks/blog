@@ -8,6 +8,7 @@ tags = [
   "tailscale",
   "docker",
   "homeserver",
+  "homelab",
   "self-hosting",
 ]
 categories = [
