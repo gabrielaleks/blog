@@ -74,5 +74,12 @@ name = "[ email ]"
 url = "mailto:hi@gabrielaleks.com"
 aria = "My email Address"
 
+[[params.social]]
+key = 3
+name = "[ resume ]"
+url = "/cv_gabrielaleks.pdf"
+aria = "Download Resume"
+download = "cv_gabrielaleks.pdf"
+
 [params.styles]
 color = "red"
