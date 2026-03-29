@@ -282,8 +282,6 @@ Lista is now live at `https://lista.kaoshome.dev` with a fully automated deploym
 
 The same pipeline pattern works for the frontend and migrations with minor adjustments. Different `paths` filter, different image name, same structure. Each service gets its own workflow file triggered only when its own code changes.
 
-In the next post, I'll cover the KAOS Dashboard: a custom landing page that reads the Docker socket to show live container status and the catch-all routing pattern that redirects any unknown subdomain back to the root domain.
-
 ## References
 Tailscale's documentation on this topic is thorough. Here are the pages I found most useful:
 - [Tailscale GitHub Action](https://tailscale.com/docs/integrations/github/github-action)
