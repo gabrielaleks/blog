@@ -15,7 +15,7 @@ categories = [
 ]
 +++
 
-I have two WiZ smart lamps in my apartment, both managed through Home Assistant. I can turn them on and off from a dashboard, set brightness, change color temperature etc. But I had no idea how any of it actually worked at the protocol level. I had specifically bought these lamps because I'd been wanting to learn Matter for a while and the time had finally come :)
+I have two WiZ smart lamps in my apartment, both managed through Home Assistant. I can turn them on and off from a dashboard, set brightness, change color temperature etc. But I had no idea how any of it actually worked at the protocol level. I bought these lamps specifically because I’d been wanting to learn Matter for a while, and the time had finally come :)
 
 The result is Nanomatter: a TypeScript service running on my homeserver (my Raspberry Pi) that talks to the lamps directly over the Matter protocol. No Home Assistant in the middle or proprietary bridge. Just my code issuing commands to the devices and getting state back.
 
@@ -36,6 +36,12 @@ A concrete path looks like this: `Node 5 → Endpoint 1 → OnOff cluster → to
 Then there are **Fabrics**. A fabric is a trusted domain: a certificate authority plus all the devices and controllers it has commissioned. Each controller (Home Assistant, Nanomatter, Apple Home) lives on its own fabric or joins an existing one. The important thing is that a single device can belong to at least 5 fabrics simultaneously. A lamp can be on Home Assistant's fabric and on Nanomatter's fabric at the same time, with both controllers talking to it independently. This is called **multi-admin**.
 
 **Commissioning** is the process of adding a device to a fabric. It involves PASE (Passcode-Authenticated Session Establishment), certificate exchange, and installing a Node Operational Certificate on the device. After commissioning, the device trusts your controller and you can talk to it directly.
+
+{{< figure
+    src="/images/building-a-lightweight-matter-controller/matter-interaction-model.png"
+    alt="Matter interaction model"
+    caption="Example of the hierarchy of Matter devices model. Image from [Google's Developer Center 'Matter - The Device Data Model'](https://developers.home.google.com/matter/primer/device-data-model)"
+>}}
 
 ## Why multi-admin instead of replacing Home Assistant
 
@@ -183,7 +189,18 @@ Once commissioning works, the other endpoints are straightforward.
       "colorTemperature": 370,
       "hue": 36,
       "saturation": 44
-    }
+    },
+    {
+      "id": 2,
+      "name": "WiZ G95.E27",
+      "reachable": true,
+      "on": false,
+      "brightness": 26,
+      "colorMode": 2,
+      "colorTemperature": 238,
+      "hue": 155,
+      "saturation": 126
+    },
   ]
 }
 ```
