@@ -1,4 +1,4 @@
-baseurl = "/"
+baseurl = "https://gabrielaleks.com"
 languageCode = 'en-us'
 title = "gabrielaleks.com"
 theme = "nightfall"
