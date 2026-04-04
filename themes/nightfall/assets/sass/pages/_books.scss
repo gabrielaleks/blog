@@ -1,0 +1,20 @@
+@use "../utils/variables" as v;
+@use "hugo:vars" as h;
+@use "sass:map";
+
+$_accent: if(map.has-key(v.$primary-colors, h.$color), map.get(v.$primary-colors, h.$color), #{h.$color});
+
+.bookTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.bookTag {
+  font-family: v.$fontHeader;
+  font-size: 0.78em;
+  color: $_accent;
+  border: 1px solid $_accent;
+  padding: 2px 8px;
+}

@@ -1,0 +1,37 @@
+{{ define "title" }}
+{{ .Title }} | {{ .Site.Params.author.name }}
+{{ end }}
+
+{{ define "main" }}
+<div class="postWrapper">
+  <div class="listHeader">
+    <h1>{{ .Title }}</h1>
+  </div>
+
+  {{ with .Content }}
+  <div class="listContent">
+    {{- . -}}
+  </div>
+  {{ end }}
+
+  {{ $pages := .RegularPages.ByDate.Reverse }}
+
+  <div role="list">
+    {{ range $pages }}
+      <div class="postListItem" role="listitem">
+        <div class="postHeader">
+          <a class="postListLink postTitle" href="{{ .Permalink }}">{{ .Title }}</a>
+          {{ $layout := .Site.Params.displayDateFormat | default "2006-01-02" }}
+          {{ $iso := .Date | time.Format "2006-01-02" }}
+          <time class="postDate" datetime="{{ $iso }}">{{ .Date | time.Format $layout }}</time>
+        </div>
+        {{ with .GetTerms "tags" }}
+        <div class="bookTags">
+          {{ range . }}<span class="bookTag">{{ .LinkTitle }}</span>{{ end }}
+        </div>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
