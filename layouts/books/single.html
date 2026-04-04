@@ -1,0 +1,81 @@
+{{ define "title" }}
+{{ .Title }} | {{ .Site.Params.author.name }}
+{{ end }}
+
+{{ define "main" }}
+<div class="postWrapper">
+    <nav class="postNav">
+        {{ if .PrevInSection }}
+        <a href="{{ .PrevInSection.Permalink }}" class="postNav__link postNav__link--prev">&lt; previous</a>
+        {{ else }}
+        <span></span>
+        {{ end }}
+        {{ if .NextInSection }}
+        <a href="{{ .NextInSection.Permalink }}" class="postNav__link postNav__link--next">next &gt;</a>
+        {{ end }}
+    </nav>
+
+    <h1>{{ .Title }}</h1>
+
+    {{/* Master switch */}}
+    {{ $showMetadata := true }}
+    {{ if eq .Site.Params.showMetadata false }}{{ $showMetadata = false }}{{ end }}
+    {{ if eq .Params.showMetadata false }}{{ $showMetadata = false }}{{ end }}
+
+    {{/* Published date */}}
+    {{ $showPublished := true }}
+    {{ if eq .Site.Params.showPublishedDate false }}{{ $showPublished = false }}{{ end }}
+    {{ if eq .Site.Params.published false }}{{ $showPublished = false }}{{ end }}
+    {{ if eq .Params.showPublishedDate false }}{{ $showPublished = false }}{{ end }}
+
+    {{/* Tags */}}
+    {{ $showTags := true }}
+    {{ if eq .Site.Params.showTags false }}{{ $showTags = false }}{{ end }}
+    {{ if eq .Params.showTags false }}{{ $showTags = false }}{{ end }}
+
+    {{/* Categories */}}
+    {{ $showCategories := true }}
+    {{ if eq .Site.Params.showCategories false }}{{ $showCategories = false }}{{ end }}
+    {{ if eq .Params.showCategories false }}{{ $showCategories = false }}{{ end }}
+
+    {{/* Compute whether there is anything to show */}}
+    {{ $hasMetadata := false }}
+    {{ if and $showPublished (not .Date.IsZero) }}{{ $hasMetadata = true }}{{ end }}
+    {{ if and $showTags (.GetTerms "tags") }}{{ $hasMetadata = true }}{{ end }}
+    {{ if and $showCategories (.GetTerms "categories") }}{{ $hasMetadata = true }}{{ end }}
+
+    {{ if and $showMetadata $hasMetadata }}
+    <section class="postMetadata">
+        <dl>
+            {{ if and $showPublished (not .Date.IsZero) }}
+            <dt>{{ i18n "published" }}</dt>
+            {{ $layout := .Site.Params.displayDateFormat | default "2006-01-02" }}
+            {{ $iso := .Date | time.Format "2006-01-02" }}
+            <dd><time datetime="{{ $iso }}">{{ .Date | time.Format $layout }}</time></dd>
+            {{ end }}
+            {{ if and $showTags (.GetTerms "tags") }}
+                {{ partial "taxonomy/tags.html" (.GetTerms "tags") }}
+            {{ end }}
+            {{ if and $showCategories (.GetTerms "categories") }}
+                {{ partial "taxonomy/categories.html" (.GetTerms "categories") }}
+            {{ end }}
+        </dl>
+    </section>
+    {{ end }}
+
+    <div>
+        {{ .Content }}
+    </div>
+
+    <nav class="postNav">
+        {{ if .PrevInSection }}
+        <a href="{{ .PrevInSection.Permalink }}" class="postNav__link postNav__link--prev">&lt; previous</a>
+        {{ else }}
+        <span></span>
+        {{ end }}
+        {{ if .NextInSection }}
+        <a href="{{ .NextInSection.Permalink }}" class="postNav__link postNav__link--next">next &gt;</a>
+        {{ end }}
+    </nav>
+</div>
+{{ end }}
