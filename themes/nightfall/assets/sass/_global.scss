@@ -82,6 +82,12 @@ figcaption {
   margin-top: 0.4rem;
 }
 
+@media screen and (max-width: 768px) {
+  .headerLinks {
+    z-index: 100;
+  }
+}
+
 @-ms-viewport{
   width: device-width;
 }
