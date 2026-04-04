@@ -1,53 +1,53 @@
 {{ define "title" }}
-{{ .Title }} | {{ .Site.Params.author.name }}
+  {{ .Title }} | {{ .Site.Params.author.name }}
 {{ end }}
 
 {{ define "main" }}
-<div class="postWrapper">
-  <div class="listHeader">
-    <h1>Tags</h1>
-  </div>
+  <div class="postWrapper">
+    <div class="listHeader">
+      <h1>Tags</h1>
+    </div>
 
-  {{ with .Content }}
-  <div class="listContent">
-    {{- . -}}
-  </div>
-  {{ end }}
+    {{ with .Content }}
+    <div class="listContent">
+      {{- . -}}
+    </div>
+    {{ end }}
 
-  {{ $terms := .Data.Terms.ByCount }}
+    {{ $terms := .Data.Terms.ByCount }}
 
-  {{ if not $terms }}
-  <p>{{ i18n "no_terms" }}</p>
-  {{ else }}
-  <div class="tagPool">
-    {{ range $terms }}
-    <a class="tagBadge" href="{{ .Page.Permalink }}">
-      #{{ .Term }}<span class="tagCount">{{ .Count }}</span>
-    </a>
+    {{ if not $terms }}
+    <p>{{ i18n "no_terms" }}</p>
+    {{ else }}
+    <div class="tagPool">
+      {{ range $terms }}
+      <a class="tagBadge" href="{{ .Page.Permalink }}">
+        #{{ .Term | title }}<span class="tagCount">{{ .Count }}</span>
+      </a>
+      {{ end }}
+    </div>
     {{ end }}
   </div>
-  {{ end }}
-</div>
 
-<div class="postWrapper">
-  <div class="listHeader">
-    <h1>Categories</h1>
-  </div>
+  <div class="postWrapper">
+    <div class="listHeader">
+      <h1>Categories</h1>
+    </div>
 
-  {{ $catPage := site.GetPage "/categories" }}
-  {{ if $catPage }}
-  {{ $catTerms := $catPage.Data.Terms.ByCount }}
-  {{ if not $catTerms }}
-  <p>{{ i18n "no_terms" }}</p>
-  {{ else }}
-  <div class="tagPool">
-    {{ range $catTerms }}
-    <a class="tagBadge" href="{{ .Page.Permalink }}">
-      {{ .Term }}<span class="tagCount">{{ .Count }}</span>
-    </a>
+    {{ $catPage := site.GetPage "/categories" }}
+    {{ if $catPage }}
+      {{ $catTerms := $catPage.Data.Terms.ByCount }}
+    {{ if not $catTerms }}
+      <p>{{ i18n "no_terms" }}</p>
+    {{ else }}
+      <div class="tagPool">
+        {{ range $catTerms }}
+        <a class="tagBadge" href="{{ .Page.Permalink }}">
+          {{ .Term | title }}<span class="tagCount">{{ .Count }}</span>
+        </a>
+        {{ end }}
+      </div>
+      {{ end }}
     {{ end }}
   </div>
-  {{ end }}
-  {{ end }}
-</div>
 {{ end }}
