@@ -2,7 +2,7 @@
 @use "hugo:vars" as h;
 @use "sass:map";
 
-$_accent: if(map.has-key(v.$primary-colors, h.$color), map.get(v.$primary-colors, h.$color), #{h.$color});
+$_accent: if(sass(map.has-key(v.$primary-colors, h.$color)): map.get(v.$primary-colors, h.$color); else: #{h.$color});
 
 .projectGrid {
   display: grid;
