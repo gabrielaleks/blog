@@ -18,16 +18,11 @@
         <div class="content vertical">
             <main class="main">
                 <div class="indexWrapper">
-                    {{ if .Site.Params.author.avatarFirst }}
-                    {{ partial "avatar.html" . }}
-                    {{ end }}
-                    <div>
-                        <h1 class="indexHeader">{{ .Site.Params.title }} <span class="plant">🪴</span>
-                        </h1>
+                    <div class="heroSection">
+                        <p class="heroGreeting">Hi, my name is</p>
+                        <h1 class="heroName">Gabriel Aleksandravicius</h1>
+                        <p class="heroTagline">welcome to my digital garden 🪴</p>
                     </div>
-                    {{ if not .Site.Params.author.avatarFirst }}
-                    {{ partial "avatar.html" . }}
-                    {{ end }}
                     {{ if isset .Site.Params "social" }}
                     {{ partial "social.html" . }}
                     {{ end }}
