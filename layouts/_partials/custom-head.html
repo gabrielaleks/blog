@@ -1,0 +1,73 @@
+<link rel="icon" type="image/png" href="/favicon.png">
+{{ partial "opengraph.html" . }}
+
+<style>
+    .heroSection {
+        display: flex;
+        flex-direction: column;
+        margin: 1px 1px 1px 1px;
+    }
+
+    .heroGreeting {
+        margin: 0 0 0.1em 0.1em;
+        font-size: 0.95em;
+        opacity: 0.55;
+        letter-spacing: 0.03em;
+    }
+
+    .heroName {
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .heroTagline {
+        margin: 0.4em 0 0 0.1em;
+        font-size: 0.9em;
+        opacity: 0.55;
+        letter-spacing: 0.02em;
+    }
+
+    @media screen and (max-width: 992px) {
+        .heroSection {
+            padding: 0 1rem;
+        }
+
+        .heroName {
+            font-size: 1.6em;
+        }
+    }
+
+    .postsList {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1.5rem;
+        width: 100%;
+        padding: 0 1rem;
+        box-sizing: border-box;
+    }
+
+    .postsListItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        text-decoration: none;
+        color: #f8f8ff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .postsListItem:last-child {
+        border-bottom: none;
+    }
+
+    .postsListTitle {
+        flex: 1;
+    }
+
+    .postsListDate {
+        white-space: nowrap;
+        opacity: 0.5;
+        font-size: 0.85em;
+    }
+</style>
