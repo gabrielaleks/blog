@@ -1,6 +1,6 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Nanomatter - Building a lightweight Matter controller"
+title = "Nanomatter - Building a lightweight Matter controller with matter.js"
 date = "2026-03-29"
 summary = "Part 6 of the homelab series: building my own Matter controller to control my home devices."
 tags = [
@@ -8,7 +8,8 @@ tags = [
   "iot",
   "docker",
   "homelab",
-  "raspberry-pi"
+  "raspberry-pi",
+  "typescript"
 ]
 categories = [
   "homelab"
