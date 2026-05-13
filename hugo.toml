@@ -40,7 +40,7 @@ weight = 6
 url = "digest"
 
 [params]
-title = "Welcome to my digital garden"
+# title = "Welcome to my digital garden" - This is unused now
 user = "gabriel"
 hostname = "aleks.com"
 
