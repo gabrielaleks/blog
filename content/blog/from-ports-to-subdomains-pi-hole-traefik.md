@@ -1,8 +1,8 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "From ports to subdomains — Pi-hole + Traefik"
+title = "Custom Local Subdomains for Docker Services with Pi-hole and Traefik"
 date = "2026-03-03T09:00:00Z"
-summary = "Part 2 of the homelab series: replacing port-based access with clean subdomain routing using Pi-hole for DNS and Traefik as a reverse proxy."
+summary = "Replacing port-based access (`host:8080`, `host:9000`) with clean subdomain routing on a homelab, using Pi-hole for local DNS and Traefik as a reverse proxy."
 tags = [
   "pi-hole",
   "traefik",

@@ -1,8 +1,8 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Nanomatter - Building a lightweight Matter controller with matter.js"
+title = "Nanomatter - Building a lightweight Matter controller with matter.js and TypeScript"
 date = "2026-03-29"
-summary = "Part 6 of the homelab series: building my own Matter controller to control my home devices."
+summary = "Building my own Matter protocol controller with matter.js and TypeScript to talk to smart lamps directly"
 tags = [
   "matter",
   "iot",
