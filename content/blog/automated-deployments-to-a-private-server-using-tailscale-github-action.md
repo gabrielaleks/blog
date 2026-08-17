@@ -1,8 +1,8 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Automated deployments to a private server using Tailscale GitHub Action"
+title = "CI/CD to a Raspberry Pi With No Public IP Using GitHub Actions and Tailscale"
 date = "2026-03-12"
-summary = "Part 5 of the homelab series: building a CI/CD pipeline for a multi-container app on the Raspberry Pi using cross-platform Docker builds, GitHub Container Registry and using the Tailscale GitHub Action to reach a server that's never publicly exposed."
+summary = "Building a CI/CD pipeline for a multi-container app on a Raspberry Pi: cross-platform Docker builds, GitHub Container Registry, and the Tailscale GitHub Action to reach a server that's never publicly exposed."
 tags = [
   "github-actions",
   "tailscale",
