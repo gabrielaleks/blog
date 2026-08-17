@@ -1,8 +1,8 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Nanomatter - Building the frontend"
+title = "Building a React Dashboard to Control Matter Smart Home Devices"
 date = "2026-05-13"
-summary = "A follow-up to the Nanomatter controller post: building a React dashboard to control Matter-powered lamps."
+summary = "Building a React and TypeScript dashboard to control Matter-powered smart lamps, including the async polling flow for commissioning new devices."
 tags = [
   "matter",
   "iot",
