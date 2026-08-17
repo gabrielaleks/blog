@@ -1,8 +1,8 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Making it secure — HTTPS with Let's Encrypt and Cloudflare"
+title = "Free HTTPS for Private Services Using Let's Encrypt DNS-01 + Cloudflare + Traefik"
 date = "2026-03-04T10:00:00Z"
-summary = "Part 3 of the homelab series: getting a trusted HTTPS certificate for a private service that's never been on the public internet, using Let's Encrypt's DNS-01 challenge and Cloudflare."
+summary = "Getting a trusted HTTPS certificate for a private service that's never been on the public internet, using Let's Encrypt's DNS-01 challenge, Cloudflare DNS and Traefik."
 tags = [
   "traefik",
   "https",
