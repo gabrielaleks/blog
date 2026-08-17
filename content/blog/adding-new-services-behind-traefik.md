@@ -1,8 +1,8 @@
 +++
 author = "Gabriel Aleksandravicius"
-title = "Adding new services behind Traefik"
+title = "A Repeatable Pattern for Adding New Docker Services Behind Traefik"
 date = "2026-03-05"
-summary = "Part 4 of the homelab series: now that the infrastructure is in place, adding a new service is super simple. We only need a docker-compose file and a YAML file detailing the routing."
+summary = "A simple, repeatable pattern for adding any new Dockerized service to a homelab: a docker-compose file plus a routing YAML file for Traefik, with Portainer and Home Assistant as examples."
 tags = [
   "traefik",
   "portainer",
