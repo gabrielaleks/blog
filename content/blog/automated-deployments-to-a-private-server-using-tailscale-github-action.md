@@ -120,7 +120,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push backend image
         run: |
@@ -133,6 +133,10 @@ jobs:
             --cache-to type=gha,mode=max \
             --push .
 ```
+
+`GITHUB_TOKEN` is generated automatically for every workflow run, scoped by the `permissions:` block above (`packages: write` here) and discarded when the job ends — no secret to create or rotate. It's what lets `contents: read` / `packages: write` / `id-token: write` actually mean something.
+
+If you'd rather use a classic personal access token instead — say, because you're publishing from a workflow in a different repo than the one the package belongs to — generate one with the `write:packages` scope (fine-grained tokens need the "Packages" permission set to read/write), store it as a secret (e.g. `GHCR_PAT`), and swap it in for `password`. One gotcha either way: if the package already exists on GHCR and was first pushed under a different token/owner, `GITHUB_TOKEN` won't automatically have push rights to it — you'll need to open the package's settings on GitHub, go to **Manage Actions access**, and add the repository with **Write** access.
 
 ## Connecting the runner to the tailnet
 
@@ -216,6 +220,7 @@ Finally, add the remaining deploy secrets:
 
     permissions:
       id-token: write
+      packages: read
 
     steps:
       - name: Authenticate with Tailscale
@@ -232,17 +237,25 @@ Finally, add the remaining deploy secrets:
           host: ${{ secrets.RPI_TAILSCALE_IP }}
           username: ${{ secrets.RPI_USER }}
           key: ${{ secrets.RPI_SSH_KEY }}
+          envs: GHCR_USER,GHCR_TOKEN
           script: |
+            set -e
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             cd ${{ secrets.RPI_DEPLOY_PATH }}
             docker compose pull
             docker compose up -d --force-recreate
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-**`permissions: id-token: write`** is required for OIDC. Without it, the runner can't request the JWT from GitHub's token endpoint. The Tailscale action will fail to authenticate if this permission is missing.
+**`permissions: id-token: write`** is required for OIDC. Without it, the runner can't request the JWT from GitHub's token endpoint. The Tailscale action will fail to authenticate if this permission is missing. **`packages: read`** is what lets this job's `GITHUB_TOKEN` pull the image — the image is private by default, so the Pi needs to authenticate before `docker compose pull` will work, same as any other GHCR consumer.
 
 **`use-cache: 'true'`** caches the Tailscale binary between runs to avoid re-downloading it every time.
 
-After the Tailscale step completes, the runner is on the tailnet. The next step uses [`appleboy/ssh-action`](https://github.com/appleboy/ssh-action): a GitHub Action that SSHes into a remote machine and runs a script. It takes the host address, username and private key, establishes the SSH connection and executes whatever is in `script`. Here it connects to the Pi using the Tailscale IP (now reachable since the runner joined the tailnet) and runs two commands: `docker compose pull` to fetch the new image that was just pushed by the build job and `docker compose up -d --force-recreate` to restart the containers with it. `--force-recreate` is necessary because `latest` is a mutable tag and Docker won't recreate a running container just because the underlying image was updated, so we have to force it.
+After the Tailscale step completes, the runner is on the tailnet. The next step uses [`appleboy/ssh-action`](https://github.com/appleboy/ssh-action): a GitHub Action that SSHes into a remote machine and runs a script. It takes the host address, username and private key, establishes the SSH connection and executes whatever is in `script`. The `envs` field forwards `GHCR_USER` and `GHCR_TOKEN` from the job's `env` into that remote session, so the script can log in before pulling. It connects to the Pi using the Tailscale IP (now reachable since the runner joined the tailnet) and runs: `docker login` to authenticate to GHCR with the job's short-lived `GITHUB_TOKEN`, `docker compose pull` to fetch the new image that was just pushed by the build job, and `docker compose up -d --force-recreate` to restart the containers with it. `--force-recreate` is necessary because `latest` is a mutable tag and Docker won't recreate a running container just because the underlying image was updated, so we have to force it. `set -e` at the top makes sure a failed login or pull stops the script instead of silently falling through to `up -d --force-recreate` and recreating the container from whatever image is already cached on the Pi.
+
+If you're using a PAT instead of `GITHUB_TOKEN` for the build job, reuse it here for `GHCR_TOKEN` too — it just needs `read:packages` in addition to `write:packages`.
 
 While the workflow is running, if you check the Tailscale admin console you'll see an extra machine joined to your tailnet: the GitHub Actions runner! It disappears the moment the job finishes.
 
@@ -264,6 +277,7 @@ GitHub Actions runner starts
     → runner can now reach 100.x.x.x:22
 
     → SSH into Pi
+      → docker login ghcr.io (authenticates with the job's GITHUB_TOKEN)
       → docker compose pull (fetches the new arm64 image)
       → docker compose up -d --force-recreate (restarts with new image)
 
