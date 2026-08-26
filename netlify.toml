@@ -1,8 +1,6 @@
 [build]
-  command = "curl -SL https://github.com/sass/dart-sass/releases/download/1.97.3/dart-sass-1.97.3-linux-x64.tar.gz | tar -xzf - && export PATH=$PATH:$(pwd)/dart-sass && hugo --gc --minify"
+  command = "curl -SL https://github.com/sass/dart-sass/releases/download/1.97.3/dart-sass-1.97.3-linux-x64.tar.gz | tar -xzf - && curl -SL https://github.com/gohugoio/hugo/releases/download/v0.157.0/hugo_extended_0.157.0_Linux-64bit.tar.gz | tar -xz && export PATH=$PATH:$(pwd)/dart-sass:$(pwd) && hugo --gc --minify"
 
 [build.environment]
-  HUGO_VERSION = "0.157.0"
-  HUGO_EXTENDED = "true"
   HUGO_ENV = "production"
   HUGO_BASEURL = "https://gabrielaleks.com"
