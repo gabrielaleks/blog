@@ -1,7 +1,7 @@
 +++
 author = "Gabriel Aleksandravicius"
 title = "How to Crimp JST PH Connectors With the Engineer PA-09 Tool"
-date = "2026-08-26"
+date = "2026-08-27"
 summary = "A step-by-step guide to crimping JST PH connectors with the Engineer PA-14 and PA-09 tools."
 tags = [
   "hardware",
