@@ -12,7 +12,7 @@ tags = [
   "typescript"
 ]
 categories = [
-  "homelab"
+  "project"
 ]
 +++
 
