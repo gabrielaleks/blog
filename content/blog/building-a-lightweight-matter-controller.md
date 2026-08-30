@@ -12,7 +12,8 @@ tags = [
   "typescript"
 ]
 categories = [
-  "homelab"
+  "project",
+  "nanomatter"
 ]
 +++
 
