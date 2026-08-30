@@ -184,7 +184,7 @@ I also bought an M3 kit box, which comes with washers, nuts and screws (in multi
 
 A few smaller decisions round out the parts list:
 - **Cable**: AWG 26 stranded, silicone-insulated. It gave me more margin for error while learning to crimp for the first time, at no real cost, since the mailbox's routing isn't tight enough for AWG 28's extra flexibility to matter.
-- **Resistors**: a 10K pull-up for each reed switch, a 10K divider for the photoresistor (tuned against the mailbox's actual light levels, more on that later), and a 1K/2K divider for the ultrasonic sensor.
+- **Resistors**: a 10K pull-up for each reed switch, a 10K divider for the photoresistor (tuned against the mailbox's actual light levels), and a 1K/2K divider for the ultrasonic sensor.
 - **Tools**: a breadboard for prototyping, my [Pinecil v2](https://pine64.com/product/pinecil-smart-mini-portable-soldering-iron/) soldering iron (what an amazing tool!), the Engineer [PA-14](https://amzn.eu/d/08iZ064B) wire stripper and [PA-09](https://amzn.eu/d/0fQRCAQk) crimping tool (I wrote a [separate step-by-step post](https://gabrielaleks.com/blog/how-to-crimp-jst-ph-connectors-using-the-engineer-pa-09-tool/) on using those two - crimping has a learning curve but I got addicted to it), and of course my multimeter, used constantly throughout.
 
 ---
