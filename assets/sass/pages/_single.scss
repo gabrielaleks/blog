@@ -1,0 +1,61 @@
+@use "../utils/variables" as v;
+
+.postWrapper {
+    text-align: left;
+    padding: 20px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+
+    // Prevent long unbroken strings (URLs, code, etc.) from forcing
+    // horizontal scroll on the mobile viewport.
+    a {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+}
+
+.postMetadata {
+    font-family: v.$fontCode;
+    display: block;
+    background: v.$backgroundDarker;
+    padding: 10px;
+}
+
+dt, dd {
+    line-height: 1.5;
+}
+
+dl {
+    display: grid;
+    grid-template-columns: max-content auto;
+}
+
+dt {
+    grid-column-start: 1;
+}
+
+dd {
+    grid-column-start: 2;
+}
+
+dt::after {
+    content: ":";
+}
+
+.postNav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid v.$backgroundDarker;
+    font-family: v.$fontCode;
+
+    &__link {
+        text-decoration: none;
+
+        &:hover {
+            @include v.primary-color;
+        }
+    }
+}
