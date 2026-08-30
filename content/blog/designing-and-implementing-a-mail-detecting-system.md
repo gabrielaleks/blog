@@ -2,7 +2,7 @@
 author = "Gabriel Aleksandravicius"
 title = "Designing and Implementing a Mail Detection System"
 date = "2026-08-30"
-summary = "From coming up with the idea to designing and implementing the software and hardware for Envelope, a system capable of determining events that happen on my mailbox."
+summary = "From coming up with the idea to designing custom PCBs and firmware for Envelope, a LoRa-connected system that detects when mail is delivered to or collected from my mailbox and reports it live to my homelab."
 tags = [
   "esp32",
   "sensors",
@@ -10,13 +10,20 @@ tags = [
   "lora",
   "mqtt",
   "design",
-  "homelab",
   "embedded",
   "iot",
   "altium",
   "pcb",
   "soldering",
-  "homelab"
+  "homelab",
+  "docker",
+  "traefik",
+  "github-actions",
+  "crimp",
+  "connector",
+  "jst",
+  "wire",
+  "platformio"
 ]
 categories = [
   "project",
@@ -67,7 +74,7 @@ Check this project's repository on GitHub: [`gabrielaleks/envelope`](https://git
     - [#1. Mosquitto](#1-mosquitto)
     - [#2. Hub app sees the message](#2-hub-app-sees-the-message)
     - [#3. SQLite](#3-sqlite)
-    - [#4. SSE / #5. Browser table updates live](#4-sse--5-browser-table-updates-live)
+    - [#4. SSE and #5. Browser table updates live](#4-sse-and-5-browser-table-updates-live)
   - [Shared](#shared)
 - [Hardware](#hardware)
   - [Validating the system on the bench with breadboards](#validating-the-system-on-the-bench-with-breadboards)
@@ -88,13 +95,13 @@ Check this project's repository on GitHub: [`gabrielaleks/envelope`](https://git
 
 ## What is 'Envelope' and how I came up with the idea for it
 
-Ever since I moved to Switzerland I started paying more attention to my mailbox. While in Brazil a great part of bureaucracy can be handled digitally, here I am always waiting for a letter to arrive. More notably, when I first applied to my residence permit I found myself going to my mailbox at least twice a day to see if I had any news from the migration department.
+Ever since I moved to Switzerland I started paying more attention to my mailbox. While in Brazil a great deal of bureaucracy can be handled digitally, here I am always waiting for a letter to arrive. More notably, when I first applied for my residence permit I found myself going to my mailbox at least twice a day to see if I had any news from the migration department.
 
-I don't remember exactly when this idea first crossed my mind but I know that I have it for many months, perhaps more than a year: it would be cool to have an automated way that determines if a new letter has been inserted to my mailbox, when it happened and if it has been collected by me or my girlfriend.
+I don't remember exactly when this idea first crossed my mind but I know that I've had it for many months, perhaps more than a year: it would be cool to have an automated way that determines when a new letter has been inserted into my mailbox, when it happened and whether it has been collected.
 
 After getting my [homelab](https://gabrielaleks.com/categories/homelab/) in good shape, I finally decided to start working on this mail detection system - which I called `Envelope`. 
 
-This blog post will cover the full development cycle I went through to make this idea come to life: from collecting the requirements and determining the components to designing the software, writing it, creating the hardware, soldering everything and deploying the full system.
+This blog post will cover the full development cycle I went through to bring this idea to life: from collecting the requirements and determining the components to designing the software, writing it, creating the hardware, soldering everything and deploying the full system.
 
 
 ## Determining the requirements
@@ -127,7 +134,7 @@ The users of my mailbox are the collectors (in this case, me and my girlfriend) 
 
 I want my system to tell me whenever any of these happen.
 
-Finally, I have to define what I mean when I say that I want to be >notified< when an event happens. My homelab infrastructure already has Home Assistant, so first I thought about integrating it. However, since I wanted to have full control over my system, I decided that for the first version I would myself implement a simple UI containing a live-updating table with the events that happen. This part of the system should get deployed to my homelab infrastructure and should be accessible on [https://envelope.kaoshome.dev](https://envelope.kaoshome.dev/) (if you're interested in learning how I deploy dockerized systems to my homelab and access them via VPN from anywhere, with HTTPS and a neat URL like that, you're welcome to read [my homelab series](https://gabrielaleks.com/categories/homelab/)).
+Finally, I have to define what I mean when I say that I want to be >notified< when an event happens. My homelab infrastructure already has Home Assistant, so first I thought about integrating with it. However, since I wanted to have full control over my system, I decided that for the first version I would implement a simple UI containing a live-updating table with the events that happen. This part of the system should get deployed to my homelab infrastructure and should be accessible on [https://envelope.kaoshome.dev](https://envelope.kaoshome.dev/) (if you're interested in learning how I deploy dockerized systems to my homelab and access them via VPN from anywhere, with HTTPS and a neat URL like that, you're welcome to read [my homelab series](https://gabrielaleks.com/categories/homelab/)).
 
 With the requirements defined, the next step was to select the components for my system!
 
@@ -189,11 +196,11 @@ A few smaller decisions round out the parts list:
 
 ---
 
-With all of that in hand, I was ready to start working on the project. In the next section I'll show how I designed the system.
+With all of that in hand, I was ready to start working on the project. In the next section I'll show how I designed and implemented the software.
 
 ## Software
 
-In this section I'll do my best to not talk about specific lines of code. Instead, I created 4 diagrams, one for each component (transmitter, receiver, hub) and one with the system overview. I will use them to drive my explanations on what each part of the system is doing. If some part needs more explaining, then I'll cover it more in depth with examples from the code.
+In this section, I'll do my best not to talk about specific lines of code. Instead, I created four diagrams: one for each component (transmitter, receiver, and hub), and one providing an overview of the system. I'll use them to guide my explanations of what each part of the system is doing. If some part needs further explanation, I'll cover it in more depth with examples from the code.
 
 ### Overview
 
@@ -203,18 +210,18 @@ In this section I'll do my best to not talk about specific lines of code. Instea
   caption="System Overview Diagram"
 >}}
 
-In the diagram above I identify the major system components:
+In the diagram above, I identify the major system components:
 - **Transmitter**: Lives in the mailbox and is composed of a T3-S3 and its sensors.
 - **Receiver**: Lives in my apartment, near the window, and is composed of a T3-S3.
 - **Homelab**: There are two relevant docker services I added for this project to run on my homelab setup. First, Mosquitto - an MQTT broker. Second, Hub - which runs SQLite and the webapp that presents the events.
 
-As represented in the diagram, there are 6 steps that happen on the system:
-1. When an event is detected, the transmitter wakes up from its deep-sleep, collects samples with the sensors, uses this data to classify the type of event that happened and uses LoRa to send a packet to the receiver.
+As represented in the diagram, there are 6 steps that happen in the system:
+1. When an event is detected, the transmitter wakes up from deep sleep, collects samples with the sensors, uses this data to classify the type of event that happened and uses LoRa to send a packet to the receiver.
 2. LoRa is used as long-range communication technology between the transmitter and receiver. I'm using the 868 MHz band with no extra infrastructure in between the two LoRa radios.
 3. The receiver will receive the packet sent by the transmitter and send an ACK back.
 4. Since they are both connected to the same WiFi network, the receiver can reach the homelab. It processes the packet, assembling a JSON from its data, and, using MQTT, publishes it to the `envelope/event` topic.
 5. On the homelab's side I am using Mosquitto as the MQTT broker. It persists any data published to its `envelope/event` topic.
-6. The extreme end of the system is what I am calling as "hub". It is the Node.js + Express app that subscribes to `envelope/event`, processes incoming messages, stores them in a SQLite database and displays them in the UI. I'm using SSE (server-sent events) in order to have live updates in the UI.
+6. The extreme end of the system is what I am calling "hub". It is the Node.js + Express app that subscribes to `envelope/event`, processes incoming messages, stores them in a SQLite database and displays them in the UI. I'm using SSE (server-sent events) in order to have live updates in the UI.
 
 I'll cover each component and the transitions between them in depth in the next sections.
 
@@ -236,53 +243,53 @@ Code: [`envelope/transmitter`](https://github.com/gabrielaleks/envelope/tree/mas
 The diagram above walks through one full wake cycle - from the reed switch trip that wakes the board, through classification, to the retried LoRa send back to the receiver.
 
 #### #1 - Deep sleep
-The transmitter spends almost all its life in deep sleep. It wakes up only on a physical event - the flap or box magnet moving away from the reed switch. This was my first time designing a system that stays asleep, so first I had to understand how it works and what was the best pick for my needs - light sleep or deep sleep.
+The transmitter spends almost all its life in deep sleep. It wakes up only on a physical event - the flap or box magnet moving away from the reed switch. This was my first time designing a system that stays asleep, so first I had to understand how it works and what the best pick for my needs was - light sleep or deep sleep.
 
 First, I decided to use a sleep mode because my system does nothing most of the time, so there's no need for it to be running in active mode continuously - it would just drain its battery very quickly. Using a sleep mode reduces the power consumption drastically, so I delved into how it works and how to use it.
 
 My biggest references here were two articles from [Random Nerd Tutorials](https://randomnerdtutorials.com/) - one that explains how deep sleep works and another that explains light sleep.
 
-Light sleep keeps the CPU paused, WiFi off and the RAM data intact. It saves less battery than its alternative - deep sleep. Deep sleep turns off the CPU and WiFi, but the Ultra Low Power (ULP) co-processor can still be used. I can write a program to it so it wakes up the main CPU after an external event happens. Only a specific set of pins can be used by the ULP - `RTC_GPIO` and `touch` pins. It has no ADC, so the only wakeup source can be the reed switches. In summary, the relevant distinction between the two is in how quickly each wakes up the system and how much battery it saves.
+Light sleep keeps the CPU paused, WiFi off and the RAM data intact. It saves less battery than its alternative - deep sleep. Deep sleep turns off the CPU and WiFi, but the Ultra Low Power (ULP) co-processor can still be used. I can write a program for it so it wakes up the main CPU after an external event happens. Only a specific set of pins can be used by the ULP - `RTC_GPIO` and `touch` pins. It has no ADC, so the only wakeup source can be the reed switches. In summary, the relevant distinction between the two is in how quickly each wakes up the system and how much battery it saves.
 
-I decided to start with deep sleep and, if the wakeup was too slow, I would switch to light sleep (deep sleep ended up being perfect for me, which I wasn't expecting since the action of inserting a letter is also super fast!).
+I decided to start with deep sleep and, if the wakeup was too slow, I'd switch to light sleep. Deep sleep ended up being perfect for me, which I wasn't expecting since the action of inserting a letter is also super fast!
 
 #### #2 - Wakes up
 I am using two wakeup sources: GPIO 15 (used by the box's reed switch) and GPIO 16 (used by the flap's reed switch). They wake up the board when either pin goes LOW (i.e., the magnet moves away). The pin that got triggered is recorded as the wakeup reason.
 
-If you want to check how I'm handling deep sleep, go check the [transmitter's `main.cpp` file](https://github.com/gabrielaleks/envelope/blob/master/transmitter/src/main.cpp).
+If you want to check how I'm handling deep sleep, take a look at the [transmitter's `main.cpp` file](https://github.com/gabrielaleks/envelope/blob/master/transmitter/src/main.cpp).
 
 #### #3 - Takes first readings
 After the board wakes up, the main part of my transmitter code gets called. Before I explain what happens, let me briefly explain the architecture I have.
 
-In the `main.cpp` file I have the `setup()` and `loop()` blocks, as in any other Arduino-based application. Since the transmitter doesn't have a loop, only a specific set of actions that have to happen when it wakes up, the `loop()` block is empty, so everything runs inside the `setup()`. 
+In the `main.cpp` file, I have the `setup()` and `loop()` blocks, as in any other Arduino-based application. Since the transmitter doesn't run a continuous loop - only a specific set of actions when it wakes up - the `loop()` block is empty, so everything runs inside the `setup()`.
 
-The `setup()` block starts by defining a watchdog timer - from Espressif's own docs, it monitors the system's operation and recovers from software/hardware faults by restarting the system if it becomes unresponsive. It then defines all the rules for my deep sleep setup and, when either pin goes low, it calls `Manager::run()`.
+The `setup()` block starts by defining a watchdog timer - it monitors the system's operation and recovers from software/hardware faults by restarting the system if it becomes unresponsive. It then defines all the rules for my deep sleep setup and, when either pin goes low, it calls `Manager::run()`.
 
-The transmitter has 5 classes: one for each sensor (to initialize them and get measurements), one for the event classification - `EventClassifier` - and one to orchestrate the operations. The latter one is `Manager`. Its `run()` function will:
-- initialize the sensors, the display and LoRa
-- get the first set of measurements from every sensor
-- wait for the event to finish (i.e. for the flap or box to be closed)
-- get a new measurement from the ultrasonic sensor
-- use the collected data to classify the type of event (calling `EventClassifier::classifyEvent()`)
-- assemble a packet to send to the receiver
-- send the packet via LoRa
+The transmitter has 5 classes: one for each sensor (to initialize them and get measurements), one for the event classification - `EventClassifier` - and one to orchestrate the operations. The latter one is `Manager`. Its `run()` method will:
+- initialize the sensors, the display and LoRa,
+- get the first set of measurements from every sensor,
+- wait for the event to finish (i.e. for the flap or box to be closed),
+- get a new measurement from the ultrasonic sensor,
+- use the collected data to classify the type of event (calling `EventClassifier::classifyEvent()`),
+- assemble a packet to send to the receiver,
+- send the packet via LoRa.
 
 After that, the transmitter goes back to deep sleep.
 
 With the inner workings of Manager already explained, let me come back to step 3 in the diagram. The first readings taken by the transmitter include:
-- distance: the >before<, represents the distance from the top of the box to its bottom, right at the start of the event.
+- distance: the >before< represents the distance from the top of the box to its bottom, right at the start of the event.
 - flap and box magnet states: even though I know which reed switch was responsible for the event, I read from both for debug purposes.
 - light level: direct reading from the photoresistor
 - battery level: I read from it here not only for debug reasons but also because I want the UI to show a badge when the battery level goes under a threshold determined by me, which alerts me to recharge the battery.
 
 #### #4 - Waits for the magnets to reconnect
-The code then waits for both magnets to reconnect. If it takes too long (more than `MAX_CLOSE_WAIT_MS`), it times out and the rest of the operation continues. This timeout exists mainly as a power safeguard - if the flap gets stuck open, the door is left open or the magnets accidentally drift away from the reliable range in which the reed switches operate, then the transmitter would be left awake forever.
+The code then waits for both magnets to reconnect. If it takes too long (more than `MAX_CLOSE_WAIT_MS`), it times out and the rest of the operation continues. This timeout exists mainly as a power safeguard - if the flap gets stuck open, the door is left open, or the magnets accidentally drift away from the reliable range in which the reed switches operate, then the transmitter would be left awake forever.
 
 #### #5 - Takes second reading
 After coming back from the wait loop, a second reading is made with the ultrasonic sensor. No other sensor gets called.
 
 #### #6 - Classifies the event
-This is where `EventClassifier::classifyEvent()` gets called into action. It uses the distance data (before and after) and the reed switch that caused the event to determine which event happened and the fill-change (i.e. if something was added/removed or nothing changed). It also uses constants defined in the transmitter's config file to determine if the box is full or not. For this, I had to consider the height of the box and the height of the ultrasonic module, and set an arbitrary value to represent a >full< state. The box takes precedence if both wake the device at once.
+This is where `EventClassifier::classifyEvent()` gets called into action. It uses the distance data (before and after) and the reed switch that caused the event to determine which event happened and what the fill-change was (i.e. if something was added/removed or nothing changed) - the box takes precedence if both switches wake the device at once. It also uses constants defined in the transmitter's config file to determine if the box is full or not. For this, I had to consider the height of the box and the height of the ultrasonic module, and set an arbitrary value to represent a >full< state.
 
 #### #7 - Builds packet
 
@@ -294,16 +301,16 @@ You can check the packet format here: [`envelope/shared/packet.h`](https://githu
 #define PACKET_MAGIC 0xAB12
 ```
 
-I added this because sometimes the receiver would pick up a random signal and interpret it as an incoming packet coming from the transmitter.
+I added this because sometimes the receiver would pick up a random signal and interpret it as an incoming packet from the transmitter.
 
 One thing worth noting: only the >after< distance reading makes it into the packet, and from there into the hub. The >before< one only exists long enough to compute the fill-change locally, then gets discarded.
 
 #### #8 - Sends packet over LoRa to receiver
-The final thing that `Manager::run()` does is send the assembled packet via LoRa to the receiver. [LoRaRadio.cpp](https://github.com/gabrielaleks/envelope/blob/master/shared/LoRaRadio.cpp) is one class used symmetrically by both sides - transmitter and receiver each instantiate their own SX1276 radio and call the same `init()`, but what actually makes them able to talk to each other comes down to a few things defined as radio parameters in `init()`: frequency, bandwidth, spreading factor, coding rate, sync word, preamble length and CRC. The LoRa demodulation only works if transmitter and receiver agree on all of these. That's why I share them in [`envelope/shared/common_config.h`](https://github.com/gabrielaleks/envelope/blob/master/shared/common_config.h).
+The final thing that `Manager::run()` does is send the assembled packet via LoRa to the receiver. [LoRaRadio.cpp](https://github.com/gabrielaleks/envelope/blob/master/shared/LoRaRadio.cpp) is one class used symmetrically by both sides: transmitter and receiver each instantiate their own SX1276 radio and call the same `init()`. What actually makes them able to talk to each other, though, comes down to a few things defined as radio parameters inside that `init()`: frequency, bandwidth, spreading factor, coding rate, sync word, preamble length and CRC. The LoRa demodulation only works if transmitter and receiver agree on all of these, which is why I share them in [`envelope/shared/common_config.h`](https://github.com/gabrielaleks/envelope/blob/master/shared/common_config.h).
 
 If the send fails, I log the error and break out of the loop. If it is successful, the transmitter immediately flips to listening for an ACK. This is the ACK retry loop, one attempt at a time:
 - Send fails: logged, loop breaks immediately, no more attempts this wake.
-- Send succeeds: the transmitter immediately flips to listening for an `ACK`.
+- Send succeeds: the transmitter immediately flips to listening for an ACK.
   - ACK received: loop ends, this is the success path.
   - Timeout: the packet may never have reached the receiver, or the ACK got lost coming back. Logged, retried on the next attempt.
   - Any other receive error: treated as a send failure, bumps `errorCount`.
@@ -316,7 +323,7 @@ The system then goes back to deep sleep. Excluding the wait for the flap/box to 
 
 Code: [`envelope/receiver`](https://github.com/gabrielaleks/envelope/tree/master/receiver)
 
-"Receiver" is just the ESP32 T3-S3 board that lives in my apartment. It contains the firmware for the ESP32-S3 board that sits at home, near the homelab. It listens for LoRa packets from the transmitter at the mailbox and forwards parsed events to the home MQTT broker. It is always powered and always listening (i.e. it is not in light/deep sleep). It talks to the transmitter over LoRa and to the MQTT broker over WiFi, publishing JSON to topic `envelope/event`.
+"Receiver" is just the ESP32 T3-S3 board that lives in my apartment, near the homelab. It listens for LoRa packets from the transmitter at the mailbox and forwards parsed events to the home MQTT broker. It is always powered and always listening (i.e. it is not in light/deep sleep), talking to the transmitter over LoRa and to the MQTT broker over WiFi, publishing JSON to topic `envelope/event`.
 
 {{<
   figure src="/images/designing-and-implementing-a-mail-detecting-system/receiver-internals.png"
@@ -382,7 +389,7 @@ It serves `GET /` (the HTML table) and `GET /events` (the SSE stream) on port 30
 #### #3. SQLite
 I decided to use SQLite since this database is super simple. It is initialized by the app itself and contains only a table for the events.
 
-#### #4. SSE / #5. Browser table updates live
+#### #4. SSE and #5. Browser table updates live
 I keep an in-memory list of open connections. I did this to make the experience of using the app simple: you just open a tab and leave it open, no need to refresh to see if an event happened.
 
 That covers new events showing up live, though. When you first open the page (or refresh it), the server queries SQLite directly for the existing rows and renders the full table. SSE just takes over from there to push whatever comes in after.
@@ -403,7 +410,7 @@ Docs: [`envelope/hardware`](https://github.com/gabrielaleks/envelope/tree/master
 
 ### Validating the system on the bench with breadboards
 
-At the point that I started working on the code, all of the components I bought had already arrived. This meant that I could validate my system on the breadboard as I developed it. Here's a representation of the circuit on Fritzing:
+By the time I started working on the code, all of the components I bought had already arrived. This meant that I could validate my system on the breadboard as I developed it. Here's a representation of the circuit on Fritzing:
 
 {{<
   figure src="/images/designing-and-implementing-a-mail-detecting-system/breadboard-circuit-fritzing.png"
@@ -412,7 +419,7 @@ At the point that I started working on the code, all of the components I bought 
   width="400"
 >}}
 
-Also check the circuit on a real breadboard from a picture I took while testing sending and receiving ACKs:
+Also check the circuit on a real breadboard in a picture I took while testing sending and receiving ACKs:
 
 {{<
   figure src="/images/designing-and-implementing-a-mail-detecting-system/breadboard-circuit-real.jpeg"
@@ -424,13 +431,13 @@ Also check the circuit on a real breadboard from a picture I took while testing 
 Once I reached a rather stable version of the firmware and the hardware had been validated, I decided that I wanted to give a real professional look to this project so I started working on PCBs for the system. This would not only make everything look shiny and pretty but also make the deployed system a lot more stable than other options. Putting the breadboard in the mailbox would be a disaster; another option would be to use those double-sided circuit boards for soldering projects (like [this](https://a.co/d/002pC5rN)), which I started testing with but also didn't like the result.
 
 ### Designing my PCBs on Altium
-I used to work a lot with Altium in the past - it's been 6 years already! -, so I was very excited to come back to it.
+I used to work a lot with Altium in the past (it's been 6 years already!), so I was very excited to come back to it.
 
-I used this as an opportunity to see how Claude can help in a hardware project, and it was great. First, one thing that I did was create a bunch of Architecture Decision Records (ADRs) to help me decide on what to choose for the hardware when faced with multiple options. I created a template for the ADR, chatted with Claude about what I was looking for, what the options I thought were and asked it to write me an ADR for me to take a decision. It would formalize the ideas I had, use the options I suggested, add more if there were any, and wait for my conclusion. This was an awesome way of progressing, making decisions and writing documentation. For example, ADR-001 is about the connector family I would use on the project. It presents each option, gives its pros and cons, shows what was decided and what the consequences will be. You can see the full list of ADRs I wrote here: [`envelope/hardware/adrs`](https://github.com/gabrielaleks/envelope/tree/master/hardware/adrs).
+I used this as an opportunity to see how Claude can help in a hardware project, and it was great. First, one thing that I did was create a bunch of Architecture Decision Records (ADRs) to help me decide on what to choose for the hardware when faced with multiple options. I created a template for the ADR, chatted with Claude about what I was looking for and what options I thought I had, and asked it to write me an ADR so I could take a decision. It would formalize the ideas I had, use the options I suggested, add more if there were any, and wait for my conclusion. This was an awesome way of progressing, making decisions and writing documentation. For example, ADR-001 is about the connector family I would use for the project. It presents each option, gives its pros and cons, shows what was decided and what the consequences will be. You can see the full list of ADRs I wrote here: [`envelope/hardware/adrs`](https://github.com/gabrielaleks/envelope/tree/master/hardware/adrs).
 
-A full list of hardware requirements was created. It contains environmental, electrical and mechanical requirements. You can check it here: [`envelope/hardware/requirements.md`](https://github.com/gabrielaleks/envelope/blob/master/hardware/requirements.md).
+I also created a full list of hardware requirements. It contains environmental, electrical and mechanical requirements. You can check it here: [`envelope/hardware/requirements.md`](https://github.com/gabrielaleks/envelope/blob/master/hardware/requirements.md).
 
-I also wrote the main design rules I would follow in a file. It contained not only fab-capability rules that are also used by the fabricator I used (JLCPCB) but also standards I defined, such as the connector pin order, the through-hole pad sizes and the trace widths I used for power and signal lines.
+I also wrote the main design rules I would follow into a file. It contained not only fab-capability rules that are also used by the fabricator I used (JLCPCB) but also standards I defined, such as the connector pin order, the through-hole pad sizes and the trace widths I used for power and signal lines.
 
 Finally, I created one markdown file for each hardware module. It was natural to define 4 modules: main board, photoresistor, reed switch and ultrasonic.
 
@@ -450,12 +457,12 @@ Elements:
 - Holder for an 18650 battery cell.
 - Antenna (connected to the T3-S3 but I had to account for its size since it protrudes from the board).
 - 4x JST PH connectors, one per sensor module: 2x 3-pin (reed switch), 1x 3-pin (photoresistor), 1x 4-pin (ultrasonic).
-- The T3-S3 has no bare VIN/BAT pad, its onboard battery input is a small pre-mounted 1.25mm-pitch SMD connector. To connect to it, I added a 2-pin JST PH connector.
+- The T3-S3 has no bare VIN/BAT pad - its onboard battery input is a small pre-mounted 1.25mm-pitch SMD connector. To connect to it, I added a 2-pin JST PH connector.
 - Two power rails: 3.3V (used by the reed switch and photoresistor) and 5V (used by the ultrasonic module). 
 
 I added a cutout under the socketed T3-S3, exposing its onboard OLED display so it stays visible for debugging.
 
-I designed this board to have a size of 64.95mm x 98.5mm. I added 4x M3 mounting holes, one on each corner, so if I decide on the future to mount it on a structure instead of just leaving it loose on the enclosure, I can.
+I designed this board to have a size of 64.95mm x 98.5mm. I added 4x M3 mounting holes, one on each corner, so if I decide in the future to mount it on a structure instead of just leaving it loose inside the enclosure, I can.
 
 #### Photoresistor
 
@@ -489,9 +496,9 @@ Elements:
 - 10K resistor.
 - 3-pin JST PH connector.
 
-This is the only PCB that will be used twice: one for the flap switch and one for the box switch. The PCBs are identical - the only difference is to what connector they connect to in the main board.
+This is the only PCB that will be used twice: one for the flap switch and one for the box switch. The PCBs are identical - the only difference is which connector on the main board they connect to.
 
-The magnet is not part of this module. It will be taped to the moving part of the mailbox. The reed switch module itself is mounted stationary, right next to where the magnet sits. The gap distance and magnet orientation matter a lot (!) for reliable switching. I empirically tested this, and the actual operate distance with the real 6x stacked magnet configuration I am using is from 2 to 3 cm. Knowing this, my target was to set them 2.5cm apart when taping them to the mailbox.
+The magnet is not part of this module. It will be taped to the moving part of the mailbox. The reed switch module itself is mounted stationary, right next to where the magnet sits. The gap distance and magnet orientation matter a lot (!) for reliable switching. I empirically tested this, and the actual operate distance with the real 6x stacked magnet configuration I am using ranges from 2 to 3 cm. Knowing this, my target was to set them 2.5cm apart when taping them to the mailbox.
 
 The final size of this module is 30mm x 27.2mm. I added 2x M3 mounting holes, positioned on two sides.
 
@@ -551,11 +558,11 @@ And here they are after I soldered everything:
 
 After crimping the connectors and soldering the components, I validated the system with my multimeter. I first tested the continuity between the boards to make sure that the cables were correctly crimped. One or two were not, so I fixed them and went to the next test. With the battery connected, I validated the power lines to make sure that the appropriate voltages were reaching their corresponding pads.
 
-I noticed that the cutout for the display ended up being a teeny tiny bit offset downwards. This happened because I based this on the 3D model that they make available and apparently it is not perfect. In any case, this is not a big problem as I can still see the display, but if I ever make a v2 I'll make sure to update this.
+I noticed that the cutout for the display ended up being a teeny tiny bit offset downwards. This happened because I based this on the 3D model they make available, which apparently isn't perfect. In any case, this is not a big problem as I can still see the display, but if I ever make a v2, I'll make sure to update this.
 
 Everything arrived 10 days before the crimp tool... so I ended up crimping the connectors by hand with a set of pliers! At first it was terrible and I lost a bunch of contacts, but eventually I learned how to do it. After the tool arrived, I decided to re-crimp everything and oh man how different the experience became.
 
-The first time I crimped the battery cable, I did it in the opposite way, so when I tested the battery the trace that leads from the battery holder to the battery connector just... burned. I was honestly expecting something more terrible to happen, so looking at it now this was actually a relief - and also cool, it was the first time I saw a trace burn like that.
+The first time I crimped the battery cable, I did it backwards, so when I tested the battery, the trace that leads from the battery holder to the battery connector just... burned. I was honestly expecting something more terrible to happen, so looking at it now this was actually a relief - and also cool, it was the first time I saw a trace burn like that.
 
 ## Deploying the system
 ### Installing the transmitter module on the mailbox
@@ -569,9 +576,9 @@ Here's how the main board looks in its enclosure:
   width="400"
 >}}
 
-I used small cables to validate the PCBs - around 20cm in length. This was very practical on the test bench since it didn't occupy much space. For the actual mailbox, though, I had to use longer cables since the components are scattered inside the mailbox and the main board's enclosure will sit on the bottom-left corner. For example, the photoresistor module is right next to the main board, so I used 20cm cables, but the ultrasonic module was more distant and the reed switches even more - and one is farther than the other. Since I knew the internal compartment size of the mailbox and knew where I wanted each module to be, I chose the length of the cables so each module was reachable and added an extra margin for safety.
+I used small cables to validate the PCBs - around 20cm in length. This was very practical on the test bench since it didn't occupy much space. For the actual mailbox, though, I had to use longer cables since the components are scattered inside the mailbox and the main board's enclosure will sit on the bottom-left corner. For example, the photoresistor module is right next to the main board, so I used 20cm cables, but the ultrasonic module was more distant and the reed switches even more - and one is farther than the other. Since I knew the internal compartment size of the mailbox and knew where I wanted each module to be, I chose the length of the cables so each module was reachable, and added an extra margin for safety.
 
-I then brought to the mailbox everything I needed to install the system:
+I then brought everything I needed to install the system into the mailbox:
 - PCBs
 - Battery
 - Magnets
@@ -583,9 +590,9 @@ I then brought to the mailbox everything I needed to install the system:
 
 My first task was to find, for each magnet, a spot 2.5cm away where I could safely tape the corresponding reed switch module. I ended up deciding to tape one reed switch on the right side of the mailbox, with its magnet taped directly on the flap; the other reed switch I taped at the ceiling, right next to the door, with its magnet taped right next to it.
 
-I used the bottom parts of the adhesive-backed cable tie mounts as surfaces for the magnets. The magnets were taped to that surface and that surface was taped to the mailbox.
+I used the bottom parts of the adhesive-backed cable tie mounts as surfaces for the magnets. The magnets were taped to that surface, and that surface was taped to the mailbox.
 
-After validating the reed switch and magnets positions, I proceeded to the final part of the installation: handling cable management. I installed this at night, so thanks Ayumi for holding the flashlight for me while I connected everything!
+After validating the reed switch and magnet positions, I proceeded to the final part of the installation: handling cable management. I installed this at night, so thanks Ayumi for holding the flashlight for me while I connected everything!
 
 This was the final result:
 
@@ -612,7 +619,7 @@ Complete view of the system:
   caption="Mailbox with the transmitter module inside and magnets on the door"
 >}}
 
-I am very proud of how this ended up looking! The double-sided tape I bought is amazing - it held the PCBs and the magnets on their places very well and even if I use the flap aggressively, putting myself in the shoes of an angry mailman, the components don't move. I really liked the cabling management I did too - the system ended up looking quite elegant in my opinion.
+I am very proud of how this ended up looking! The double-sided tape I bought is amazing - it held the PCBs and the magnets in place very well and even if I use the flap aggressively, putting myself in the shoes of an angry mailman, the components don't move. I really liked the cable management I did too - the system ended up looking quite elegant in my opinion.
 
 ### Deploying the Hub on the homelab
 
@@ -624,11 +631,11 @@ The very final task was to deploy the Hub module on my homelab. So far I'd been 
 - Routing the app through Traefik, my existing reverse proxy on kaos, so it's reachable at `https://envelope.kaoshome.dev` with a real TLS certificate instead of a bare IP and port.
 - Verifying the whole pipeline end-to-end with a real mailbox event.
 
-For a full breakdown on how I add new dockerized services to my homelab, feel free to read my other post: [A Repeatable Pattern for Adding New Docker Services Behind Traefik](https://gabrielaleks.com/blog/adding-new-services-behind-traefik/).
+For a full breakdown of how I add new dockerized services to my homelab, feel free to read my other post: [A Repeatable Pattern for Adding New Docker Services Behind Traefik](https://gabrielaleks.com/blog/adding-new-services-behind-traefik/).
 
 ### Result
 
-We're done! Now, I have been validating it >in production< with >real users< (seems funny to call my mailbox and the mailman like that) on the last few days. 
+We're done! Now, I have been validating it >in production< with >real users< (seems funny to call my mailbox and the mailman like that) for the last few days. 
 
 Here are two videos I did with the system in action. The first one shows the insertion of mail being registered:
 
@@ -647,17 +654,17 @@ The second one shows the mail collection event being registered:
 The system has been working pretty well, with every opening of the flap and box door correctly reported - even if sometimes the type of event is not correct. Check the section below for more details.
 
 ## Afterthoughts and next steps
-- So far, the most common issue is a wrong type of event being reported. This has to do with the `FILL_DELTA_THRESHOLD_MM` I am using. Inserting a single letter is not common but can happen - and also has variants, for example sometimes I get ads in the form of fliers or thin sheets of paper. Since `FILL_DELTA_THRESHOLD_MM` is (in the time I am writing this) set as 4, if the mail being inserted has less than 4mm it won't be identified by the ultrasonic sensor. The obvious fix would be to reduce this threshold or just remove it, but then I may start getting a bunch of false inserts since the sensor is not super precise. I still have to run some tests to see how to proceed. Something I can do is get a bunch of readings from the ultrasonic to get rid of possible noise, but this needs to be executed quickly as to not disturb the agility of the system.
-- I enjoyed crimping AWG 26 cables. I had some spare AWG 28 to compare and indeed using the former offered me an easier experience when learning how to use my crimping tool while still giving me more mechanically robust results than the latter. There was no need for the extra space that the smaller cable would give me.
-- I like the off-the-shelf plastic box I bought to serve as the T3-S3's enclosure, but to make it look nicer I want someday to 3D print a custom enclosure.
-- I haven't measured yet the continuous draw that my circuit has in deep sleep because of the pull-up resistors (2x10k on the reed switches). Claude calculated that to be a ~660µA continuous draw, dwarfing the deep sleep's draw (~10-25µA). At that rate, 2200mAh gets me roughly 4-5 months, not "practically forever" as I initially established.
+- So far, the most common issue is a wrong type of event being reported. This has to do with the `FILL_DELTA_THRESHOLD_MM` I am using. Inserting a single letter isn't common, but it can happen, and it comes in variants too - sometimes I get ads in the form of fliers or thin sheets of paper. Since `FILL_DELTA_THRESHOLD_MM` is (at the time of writing) set to 4, if the mail being inserted is less than 4mm thick, it won't be identified by the ultrasonic sensor. The obvious fix would be to reduce this threshold or just remove it, but then I may start getting a bunch of false inserts since the sensor is not super precise. I still have to run some tests to see how to proceed. Something I can do is get a bunch of readings from the ultrasonic to get rid of possible noise, but this needs to be executed quickly so as not to disturb the agility of the system.
+- I enjoyed crimping AWG 26 cables. I had some spare AWG 28 to compare, and indeed using the former offered me an easier experience when learning how to use my crimping tool while still giving me more mechanically robust results than the latter. There was no need for the extra space that the smaller cable would give me.
+- I like the off-the-shelf plastic box I bought to serve as the T3-S3's enclosure, but to make it look nicer, someday I want to 3D print a custom enclosure.
+- I haven't yet measured the continuous draw that my circuit has in deep sleep because of the pull-up resistors (2x10k on the reed switches). Claude calculated that to be a ~660µA continuous draw, dwarfing the deep sleep's draw (~10-25µA). At that rate, 2200mAh gets me roughly 4-5 months, not "practically forever" as I initially established.
 - The battery I bought is listed as having built-in overcharge/overdischarge/short-circuit protection, but its stated length doesn't match a protected cell (those run a few mm longer to fit the protection PCB), so I'm treating that claim as boilerplate rather than trusting it. I want to add an inline PTC resettable fuse on the battery+ lead as an actual safeguard, sized to hold above normal draw but well below a short-circuit current.
 - I also skipped conformal coating on the module PCBs for this first version, even though the mailbox's sealed-but-humid interior (condensation risk, though no direct water exposure) would benefit from it. Something to revisit if I ever see corrosion.
 - Currently, communication is one-way: transmitter -> receiver -> hub. This means that I don't know if there has been an error on the transmitter unless I go and check. I am planning on adding some type of heartbeat to the system so the transmitter advertises itself as working and, if I miss too many expected heartbeats, the UI should let me know.
 - I am considering adding some extra notification to the system, like push notifications or emails.
-- I used this as an opportunity to see how to write tests in PlatformIO. Turns out that if the function you want to test lives in a file that has hardware dependencies (e.g., it has `#include <Arduino.h>`), the test won't run while the computer is disconnected from the board - even if the function you're testing never touches the hardware. This can be cumbersome for small projects - like this - but it has its value when working on bigger projects. For example, I wanted to test the event classification method and, when I originally wrote it, it was part of `Manager`. Since Manager has hardware dependencies, the test could not run "natively", without hardware. To make this possible, I had to extract the logic to a separate class, so I created `EventClassifier`. This was worth it as it forced me to decouple the orchestrator from the plain business logic that drives event classification. Now, to a bad example: I also wanted to test `Battery::getPercentage` but couldn't because of `Battery::getVoltage`, which uses `analogRead()` to read from the battery pin. It made no sense for me to extract getPercentage to a different class, so I just decided to not test this at all. In the end, you have to determine what makes sense to you.
+- I used this as an opportunity to see how to write tests in PlatformIO. Turns out that if the function you want to test lives in a file that has hardware dependencies (e.g., it has `#include <Arduino.h>`), the test won't run while the computer is disconnected from the board - even if the function you're testing never touches the hardware. This can be cumbersome for small projects - like this - but it has its value when working on bigger projects. For example, I wanted to test the event classification method and, when I originally wrote it, it was part of `Manager`. Since Manager has hardware dependencies, the test could not run "natively", without hardware. To make this possible, I had to extract the logic into a separate class, so I created `EventClassifier`. This was worth it as it forced me to decouple the orchestrator from the plain business logic that drives event classification. Now, for a bad example: I also wanted to test `Battery::getPercentage` but couldn't because of `Battery::getVoltage`, which uses `analogRead()` to read from the battery pin. It made no sense for me to extract getPercentage into a different class, so I just decided to not test this at all. In the end, you have to determine what makes sense to you.
 
-That's it, thank you for reading! I had a lot of fun on this project. Ever since I started my homelab project and this blog I have been very happy with the personal projects I worked on. Sometimes they take a bit more time than expected to finish - either because I have to focus on my job or because of an unexpected challenge - but I am super happy with this ever-growing environment built for myself. Writing about it here also makes me more self-conscious about the work I do and how I explain/present stuff, so I have been learning a lot not only technically but also from the perspective of a writer!
+That's it, thank you for reading! I had a lot of fun with this project. Ever since I started my homelab project and this blog, I have been very happy with the personal projects I worked on. Sometimes they take a bit more time than expected to finish - either because I have to focus on my job or because of an unexpected challenge - but I am super happy with this ever-growing environment built for myself. Writing about it here also makes me more self-conscious about the work I do and how I explain/present stuff, so I have been learning a lot not only technically but also from the perspective of a writer!
 
 ## References
 - HiveMQ - MQTT Essentials: https://www.hivemq.com/blog/mqtt-essentials-part-1-introducing-mqtt/
