@@ -31,19 +31,17 @@ categories = [
 
 Check this project's repository on GitHub: [`gabrielaleks/envelope`](https://github.com/gabrielaleks/envelope)
 
-## Executive Summary
-- [Executive Summary](#executive-summary)
+## Table of Contents
+- [Table of Contents](#table-of-contents)
 - [What is 'Envelope' and how I came up with the idea for it](#what-is-envelope-and-how-i-came-up-with-the-idea-for-it)
 - [Determining the requirements](#determining-the-requirements)
 - [Components and tools](#components-and-tools)
   - [Microcontroller](#microcontroller)
   - [Sensors](#sensors)
   - [Connectors](#connectors)
-  - [Cable](#cable)
   - [Battery + holder](#battery--holder)
   - [Mounting methods and cabling](#mounting-methods-and-cabling)
-  - [Resistors](#resistors)
-  - [Tools](#tools)
+  - [Small stuff](#small-stuff)
 - [Software](#software)
   - [Overview](#overview)
   - [Transmitter](#transmitter)
@@ -154,17 +152,16 @@ Searching for solutions, I found the [LilyGo T3S3 dev board](https://www.espboar
 ### Sensors
 
 For the sensors that go inside the mailbox, my initial idea was to use three types of sensors independently:
-- **Two reed switches (GPS-14B N/C)**. A reed switch is a sensor that detects the presence of a magnetic field, so **I also have to buy magnets** to use with them. One of the reed switches will be next to the flap and the other, on the door. The magnets will be taped close to the sensors but on the moving parts, so at rest the magnetic fields are sensed and when the flap or box are moved, the magnets will be moved with them and the field won't be sensed anymore. I have two options for a reed switch: normally closed (N/C) and normally open (N/O). I chose N/C because it is the more reliable choice to my use. At rest (flap closed, magnet present) the switch contacts are open and the pin is held HIGH by a pull-up resistor I'll add to the circuit. Opening the flap/box lets the magnet leave, closing the switch and pulling the pin LOW - that's the event. A broken wire just leaves the pin floating HIGH, same as the resting "no event" state, not a false trigger. On the other hand, N/O would trigger on any wire fault since a broken wire reads the same as the magnet having left, which could cause false alerts.
+- **Two reed switches (GPS-14B N/C)**.
+  - A reed switch is a sensor that detects the presence of a magnetic field, so **I also have to buy magnets** to use with them.
+  - One sits next to the flap, the other on the door, each paired with a magnet taped to the corresponding moving part. At rest, the magnet keeps the field present; opening the flap or box pulls the magnet away and breaks it - that's the event.
+  - I have two options: normally closed (N/C) and normally open (N/O). I chose N/C because it's more reliable: at rest (magnet present) the contacts are open and the pin is held HIGH by a pull-up resistor; opening the flap/box closes the switch and pulls the pin LOW. A broken wire just leaves the pin floating HIGH, same as the resting state, not a false trigger. N/O would trigger on any wire fault instead, since a broken wire reads the same as the magnet having left.
 - **Ultrasonic sensor (HC-SR04)**. An ultrasonic sensor is used to measure distance. I will tape it to the top of the box, pointing down, and use it to determine if something was inserted or removed.
 - **Photoresistor (GL5528)**. A photoresistor is a light sensitive resistor whose resistance decreases as the intensity of light they are exposed to increases.
 
 ### Connectors
 
 For the connectors, I decided to go with **JST-PH** because of their small size while still granting reasonable resistance to accidental disconnection.
-
-### Cable
-
-I'm using **AWG 26** stranded, silicone-insulated cables. From what I saw, AWG 26 gives a wider margin for error while learning to use the crimping tool for the first time at no real cost given the mailbox's routing isn't space-constrained enough for AWG 28's extra flexibility to matter.
 
 ### Battery + holder
 
@@ -183,23 +180,12 @@ For the T3-S3 dev board, I decided to buy a generic off-the-shelf plastic box, s
 
 I also bought an M3 kit box, which comes with washers, nuts and screws (in multiple lengths), all M3-sized. The mounting holes in the PCBs I design and on the battery holder all are M3-sized, so this will come in handy later.
 
-### Resistors
+### Small stuff
 
-I will need some resistors in my circuit:
-- The photoresistor needs a divider resistor to settle where the dark-to-bright resistance swing lands in the ADC's 0-3.3V range. The value I choose for the resistor depends on how dark the inside of the mailbox is during the day. I did some tests and decided to use a 10K resistor.
-- The reed switch needs a 10K pull-up resistor.
-- The ultrasonic sensor needs a voltage divider - I'm using 1K and 2K resistors.
-
-The reasoning for these resistors will be presented further in the text.
-
-### Tools
-
-For prototyping, I'll use a breadboard to assemble the circuit. Later, when I create my PCBs and have to solder my components, I'll use my soldering iron - I have the [Pinecil v2](https://pine64.com/product/pinecil-smart-mini-portable-soldering-iron/), what an amazing tool!
-
-For handling the connectors, I bought two tools: the Engineer [PA-14](https://amzn.eu/d/08iZ064B) to strip the wires and the [PA-09](https://amzn.eu/d/0fQRCAQk) to crimp the connectors. If you're interested in using them, I recently wrote this post with a step-by-step guide on how to use them: [How to Crimp JST PH Connectors With the Engineer PA-09 Tool
-](https://gabrielaleks.com/blog/how-to-crimp-jst-ph-connectors-using-the-engineer-pa-09-tool/). Crimping has a learning curve - as does everything - but I gotta say I got addicted to it after I learned how to do it with these tools.
-
-I also used, of course, my multimeter plenty of times on this project.
+A few smaller decisions round out the parts list:
+- **Cable**: AWG 26 stranded, silicone-insulated. It gave me more margin for error while learning to crimp for the first time, at no real cost, since the mailbox's routing isn't tight enough for AWG 28's extra flexibility to matter.
+- **Resistors**: a 10K pull-up for each reed switch, a 10K divider for the photoresistor (tuned against the mailbox's actual light levels, more on that later), and a 1K/2K divider for the ultrasonic sensor.
+- **Tools**: a breadboard for prototyping, my [Pinecil v2](https://pine64.com/product/pinecil-smart-mini-portable-soldering-iron/) soldering iron (what an amazing tool!), the Engineer [PA-14](https://amzn.eu/d/08iZ064B) wire stripper and [PA-09](https://amzn.eu/d/0fQRCAQk) crimping tool (I wrote a [separate step-by-step post](https://gabrielaleks.com/blog/how-to-crimp-jst-ph-connectors-using-the-engineer-pa-09-tool/) on using those two - crimping has a learning curve but I got addicted to it), and of course my multimeter, used constantly throughout.
 
 ---
 
