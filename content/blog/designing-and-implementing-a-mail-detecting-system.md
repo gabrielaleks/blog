@@ -310,6 +310,8 @@ You can check the packet format here: [`envelope/shared/packet.h`](https://githu
 
 I added this because sometimes the receiver would pick up a random signal and interpret it as an incoming packet coming from the transmitter.
 
+One thing worth noting: only the >after< distance reading makes it into the packet, and from there into the hub. The >before< one only exists long enough to compute the fill-change locally, then gets discarded.
+
 #### #8 - Sends packet over LoRa to receiver
 The final thing that `Manager::run()` does is send the assembled packet via LoRa to the receiver. [LoRaRadio.cpp](https://github.com/gabrielaleks/envelope/blob/master/shared/LoRaRadio.cpp) is one class used symmetrically by both sides - transmitter and receiver each instantiate their own SX1276 radio and call the same `init()`, but what actually makes them able to talk to each other comes down to a few things defined as radio parameters in `init()`: frequency, bandwidth, spreading factor, coding rate, sync word, preamble length and CRC. The LoRa demodulation only works if transmitter and receiver agree on all of these. That's why I share them in [`envelope/shared/common_config.h`](https://github.com/gabrielaleks/envelope/blob/master/shared/common_config.h).
 
@@ -396,6 +398,8 @@ I decided to use SQLite since this database is super simple. It is initialized b
 
 #### #4. SSE / #5. Browser table updates live
 I keep an in-memory list of open connections. I did this to make the experience of using the app simple: you just open a tab and leave it open, no need to refresh to see if an event happened.
+
+That covers new events showing up live, though. When you first open the page (or refresh it), the server queries SQLite directly for the existing rows and renders the full table. SSE just takes over from there to push whatever comes in after.
 
 ### Shared
 
@@ -661,6 +665,8 @@ The system has been working pretty well, with every opening of the flap and box 
 - I enjoyed crimping AWG 26 cables. I had some spare AWG 28 to compare and indeed using the former offered me an easier experience when learning how to use my crimping tool while still giving me more mechanically robust results than the latter. There was no need for the extra space that the smaller cable would give me.
 - I like the off-the-shelf plastic box I bought to serve as the T3-S3's enclosure, but to make it look nicer I want someday to 3D print a custom enclosure.
 - I haven't measured yet the continuous draw that my circuit has in deep sleep because of the pull-up resistors (2x10k on the reed switches). Claude calculated that to be a ~660µA continuous draw, dwarfing the deep sleep's draw (~10-25µA). At that rate, 2200mAh gets me roughly 4-5 months, not "practically forever" as I initially established.
+- The battery I bought is listed as having built-in overcharge/overdischarge/short-circuit protection, but its stated length doesn't match a protected cell (those run a few mm longer to fit the protection PCB), so I'm treating that claim as boilerplate rather than trusting it. I want to add an inline PTC resettable fuse on the battery+ lead as an actual safeguard, sized to hold above normal draw but well below a short-circuit current.
+- I also skipped conformal coating on the module PCBs for this first version, even though the mailbox's sealed-but-humid interior (condensation risk, though no direct water exposure) would benefit from it. Something to revisit if I ever see corrosion.
 - Currently, communication is one-way: transmitter -> receiver -> hub. This means that I don't know if there has been an error on the transmitter unless I go and check. I am planning on adding some type of heartbeat to the system so the transmitter advertises itself as working and, if I miss too many expected heartbeats, the UI should let me know.
 - I am considering adding some extra notification to the system, like push notifications or emails.
 - I used this as an opportunity to see how to write tests in PlatformIO. Turns out that if the function you want to test lives in a file that has hardware dependencies (e.g., it has `#include <Arduino.h>`), the test won't run while the computer is disconnected from the board - even if the function you're testing never touches the hardware. This can be cumbersome for small projects - like this - but it has its value when working on bigger projects. For example, I wanted to test the event classification method and, when I originally wrote it, it was part of `Manager`. Since Manager has hardware dependencies, the test could not run "natively", without hardware. To make this possible, I had to extract the logic to a separate class, so I created `EventClassifier`. This was worth it as it forced me to decouple the orchestrator from the plain business logic that drives event classification. Now, to a bad example: I also wanted to test `Battery::getPercentage` but couldn't because of `Battery::getVoltage`, which uses `analogRead()` to read from the battery pin. It made no sense for me to extract getPercentage to a different class, so I just decided to not test this at all. In the end, you have to determine what makes sense to you.
