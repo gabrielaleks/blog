@@ -160,7 +160,7 @@ For the sensors that go inside the mailbox, my initial idea was to use three typ
 
 ### Connectors
 
-For the connectors, I decided to go with **JST-PH** because of their small size while still granting reasonable resistance.
+For the connectors, I decided to go with **JST-PH** because of their small size while still granting reasonable resistance to accidental disconnection.
 
 ### Cable
 
@@ -170,7 +170,7 @@ I'm using **AWG 26** stranded, silicone-insulated cables. From what I saw, AWG 2
 
 The T3-S3 has a dedicated onboard battery connector and charge-management circuit built around a single-cell 3.7V Li-ion/LiPo battery. This, and the fact that I have no size pressure to fight, made me choose an [18650](https://en.wikipedia.org/wiki/18650_battery) battery. Another option would be to use a bare LiPo pouch, but it is not as standardized, easily swappable, cheap and available.
 
-I bought a holder on the [BK-18650-PC2](https://www.digikey.ch/fr/products/detail/mpd-memory-protection-devices/BK-18650-PC2/2079908) format, with two DIP pins at the bottom which makes soldering later very easy.
+I bought a holder similar to the [BK-18650-PC2](https://www.digikey.ch/fr/products/detail/mpd-memory-protection-devices/BK-18650-PC2/2079908), with two DIP pins at the bottom which makes soldering very easy.
 
 ### Mounting methods and cabling
 I have to worry about organizing the system inside my mailbox so that mail won't disturb it. Here, an extra requirement: I don't own the mailbox, so I can't drill it or alter it permanently in any way.
@@ -296,7 +296,7 @@ The code then waits for both magnets to reconnect. If it takes too long (more th
 After coming back from the wait loop, a second reading is made with the ultrasonic sensor. No other sensor gets called.
 
 #### #6 - Classifies the event
-This is where `EventClassifier::classifyEvent()` gets called into action. It uses the distance data (before and after) and the reed switch that caused the event to determine which event happened and the fill-change (i.e. if something was added/removed or nothing changed). It also uses constants defined in the transmitter's config file to determine if the box is full or not. For this, I had to consider the height of the box and the height of the ultrasonic module, and set an arbitrary value to represent a >full< state.
+This is where `EventClassifier::classifyEvent()` gets called into action. It uses the distance data (before and after) and the reed switch that caused the event to determine which event happened and the fill-change (i.e. if something was added/removed or nothing changed). It also uses constants defined in the transmitter's config file to determine if the box is full or not. For this, I had to consider the height of the box and the height of the ultrasonic module, and set an arbitrary value to represent a >full< state. The box takes precedence if both wake the device at once.
 
 #### #7 - Builds packet
 
@@ -322,7 +322,7 @@ If the send fails, I log the error and break out of the loop. If it is successfu
 - `errorCount` persists across wake cycles (`RTC_DATA_ATTR`). Once it exceeds `LORA_ERROR_REINIT_THRESHOLD`, the radio is re-inited and the counter resets, so repeated hard failures across separate events force recovery instead of retrying blindly forever.
 
 #### #9 - Goes back to deep sleep
-The system then goes back to deep sleep. The whole operation, from steps 2 to 8, takes less than one second (assuming no errors were thrown and no retries were needed).
+The system then goes back to deep sleep. Excluding the wait for the flap/box to close, the rest of the wake cycle takes well under a second (assuming no errors were thrown and no retries were needed).
 
 ### Receiver
 
