@@ -12,21 +12,15 @@ The deployed version of the app is managed by [netlify](https://app.netlify.com/
 
 Live app: gabrielaleks.com
 
-### Ideas for posts
-- Homelab
-  - Part 1 - Setting up the basics: Tailscale + Traefik + HTTPS (maybe break this down into two posts: one where I explain how I'm using a rpi, how i connect to it in my local network etc and another showing how to use traefik + pihole + a domain to serve the app with https)
-  - Part 2 - Adding new services
-  - Part 3 - Creating a custom dashboard
-  - Part 4 - Configuring homeassistant
-- Creating and deploying a blog with Hugo + Netlify
+### Git hooks
+A pre-commit hook in `.githooks/` refuses commits with images or videos that contain GPS location data. It needs [exiftool](https://exiftool.org/) (`brew install exiftool`) and has to be enabled once per clone:
 
-### Future features (?)
-- [X] Add ~/projects: list of projects with image, small description and link to repository
-- [X] Add ~/digest
-- [X] Add ~/categories or ~/tags
-- [X] Add anchor next to md headers
-- [X] Add simple animations:
-  - [X] Hover over header items should make them pop a bit + show background
-  - [X] Add animation to plant on main page
-  - [X] Add hover animation on blog page when hovering posts
-- [ ] Search tool
+```bash
+git config core.hooksPath .githooks
+```
+
+To strip the metadata from a file it flags (keeping the orientation), then stage it again:
+
+```bash
+exiftool -all= -tagsfromfile @ -Orientation -overwrite_original <file>
+```
