@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Refuses commits that contain images or videos with GPS location data.
+# Enable once per clone:  git config core.hooksPath .githooks
+# Bypass (only if you're sure):  git commit --no-verify
+set -uo pipefail
+
+media_regex='\.(jpe?g|png|heic|heif|tiff?|webp|gif|dng|mp4|mov|m4v)$'
+
+# Staged files that are added, copied, modified or renamed (NUL-separated, safe for spaces)
+files=()
+while IFS= read -r -d '' f; do
+  lower=$(printf '%s' "$f" | tr '[:upper:]' '[:lower:]')
+  [[ $lower =~ $media_regex ]] && files+=("$f")
+done < <(git diff --cached --name-only -z --diff-filter=ACMR)
+
+[ ${#files[@]} -eq 0 ] && exit 0
+
+if ! command -v exiftool >/dev/null 2>&1; then
+  echo "pre-commit: ${#files[@]} image/video file(s) staged, but exiftool isn't installed to check them for GPS data." >&2
+  echo "Install it with: brew install exiftool" >&2
+  exit 1
+fi
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+
+found=()
+for f in "${files[@]}"; do
+  # Check the staged version, not the working copy: that's what gets committed
+  tmp="$tmpdir/check.${f##*.}"
+  git show ":$f" > "$tmp"
+  if [ -n "$(exiftool -q -q -if '$GPSLatitude or $GPSCoordinates or $GPSPosition' -p 'gps' "$tmp")" ]; then
+    found+=("$f")
+  fi
+done
+
+[ ${#found[@]} -eq 0 ] && exit 0
+
+echo "pre-commit: these files contain GPS location data:" >&2
+for f in "${found[@]}"; do echo "  $f" >&2; done
+echo >&2
+echo "Strip all metadata (keeping orientation) and stage them again:" >&2
+for f in "${found[@]}"; do
+  printf "  exiftool -all= -tagsfromfile @ -Orientation -overwrite_original '%s' && git add '%s'\n" "$f" "$f" >&2
+done
+exit 1
