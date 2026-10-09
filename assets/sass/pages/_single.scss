@@ -13,6 +13,25 @@
         overflow-wrap: anywhere;
         word-break: break-word;
     }
+
+    // Full width, like code blocks. Cell text wraps (word-break is inherited
+    // from .postWrapper), so tables shrink to fit on mobile.
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+    }
+
+    th,
+    td {
+        padding: 6px 12px;
+        border: 1px solid #4a4a4f;
+        text-align: left;
+    }
+
+    th {
+        background: v.$backgroundDarker;
+    }
 }
 
 .postMetadata {
