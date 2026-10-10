@@ -195,7 +195,16 @@ A reboot followed by `findmnt /mnt/storage` confirms that the disk comes back on
 
 ```bash
 sudo chown alekspi:alekspi /mnt/storage
-mkdir -p /mnt/storage/{photos/{raw,edited,exports},videos,documents,media/{movies,tv,music}}
+mkdir -p /mnt/storage/{gabriel/{documents,photos/{raw,edited,exports},videos/{raw,edited}},ayumi,media/{movies,music,tv}}
+```
+
+My girlfriend and I each get a personal folder, and `media/` holds the movies, music and TV shows we share:
+
+```
+/mnt/storage
+├── gabriel/   documents/, photos/, videos/
+├── ayumi/
+└── media/     movies/, music/, tv/
 ```
 
 Every file on the disk belongs to my user (`alekspi`, UID 1000). Every container that writes to the disk will write as that same user, so a file created through one app is never "permission denied" in another.
@@ -452,7 +461,14 @@ In practice, I use the LAN IP at home, especially for large copies, and the Tail
 
 ## Dashboard
 
-My homelab dashboard has a new Storage column. The Samba card links to `smb://storage.kaoshome.dev/storage`, so on my Mac it opens the share in Finder. I used the Tailscale name here because I open the dashboard from anywhere, and that address works everywhere. For uploading files at home, I still connect through the LAN IP because of the speed test above. The column also has a card for Backrest, which is the topic of the next post.
+My homelab dashboard has a new Storage column with two Samba cards. Both open the same share in Finder, just through different addresses:
+
+- Samba (LAN) uses `smb://192.168.178.46/storage`. It's the faster one, but it only works when I'm at home
+- Samba (VPN) uses `smb://storage.kaoshome.dev/storage`. It goes through Tailscale, so it's slower, but it works from anywhere
+
+This makes the result of the speed test easy to follow: at home I click the LAN card, everywhere else the VPN one. Since the LAN card points to a fixed IP, I also told my router to always give the Pi the same address.
+
+The column also has a card for Backrest, which is the topic of the next post.
 
 <figure>
   <video src="/images/building-network-storage-on-a-raspberry-pi-before-getting-a-nas/dashboard.mp4" controls></video>
