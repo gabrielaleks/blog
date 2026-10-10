@@ -1,0 +1,85 @@
+@use "../utils/variables" as v;
+
+$padding: 1rem;
+
+// Linked figures (figure > a > img) are left alone, see assets/js/lightbox.js.
+.postWrapper figure > img {
+  cursor: zoom-in;
+}
+
+// Keep the page behind the lightbox from scrolling.
+html:has(.lightbox[open]) {
+  overflow: hidden;
+}
+
+.lightbox {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  color: v.$white;
+  background: rgba(0, 0, 0, 0.9);
+
+  &[open] {
+    animation: lightbox-fade 0.15s ease-out;
+  }
+
+  &__stage {
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding: $padding;
+    overflow: auto;
+    overscroll-behavior: contain;
+    outline: none;
+  }
+
+  &__image {
+    flex: none;
+    margin: auto;
+    // Fit the screen without upscaling. Capping a flex item with max-height
+    // would distort it, so the height limit is expressed as a width instead,
+    // using the aspect ratio set from JS.
+    max-width: min(100%, calc((100dvh - #{2 * $padding}) * var(--lightbox-ratio, 1.5)));
+    cursor: zoom-in;
+  }
+
+  // The width is set inline when zoomed.
+  &.is-zoomed &__image {
+    max-width: none;
+    cursor: zoom-out;
+  }
+
+  &.is-dragging &__image {
+    cursor: grabbing;
+  }
+
+  &__close {
+    position: absolute;
+    top: $padding;
+    right: $padding;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 15px;
+    font-family: v.$fontHeader;
+    font-size: 1em;
+    color: v.$white;
+    background-color: v.$backgroundDarker;
+    cursor: pointer;
+
+    &:hover {
+      @include v.primary-color;
+    }
+  }
+}
+
+@keyframes lightbox-fade {
+  from {
+    opacity: 0;
+  }
+}
