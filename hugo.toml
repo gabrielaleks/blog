@@ -70,6 +70,7 @@ aria = "GitHub Profile"
 key = 1
 name = "[ linkedin ]"
 url = "https://www.linkedin.com/in/gabrielaleks"
+target = "_blank"
 aria = "LinkedIn Profile"
 
 [[params.social]]
