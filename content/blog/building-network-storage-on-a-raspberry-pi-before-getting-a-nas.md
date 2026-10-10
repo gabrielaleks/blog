@@ -195,7 +195,16 @@ A reboot followed by `findmnt /mnt/storage` confirms that the disk comes back on
 
 ```bash
 sudo chown alekspi:alekspi /mnt/storage
-mkdir -p /mnt/storage/{photos/{raw,edited,exports},videos,documents,media/{movies,tv,music}}
+mkdir -p /mnt/storage/{gabriel/{documents,photos/{raw,edited,exports},videos/{raw,edited}},ayumi,media/{movies,music,tv}}
+```
+
+My girlfriend and I each get a personal folder, and `media/` holds the movies, music and TV shows we share:
+
+```
+/mnt/storage
+├── gabriel/   documents/, photos/, videos/
+├── ayumi/
+└── media/     movies/, music/, tv/
 ```
 
 Every file on the disk belongs to my user (`alekspi`, UID 1000). Every container that writes to the disk will write as that same user, so a file created through one app is never "permission denied" in another.
