@@ -39,7 +39,6 @@ categories = [
 Check this project's repository on GitHub: [`gabrielaleks/envelope`](https://github.com/gabrielaleks/envelope)
 
 ## Table of Contents
-- [Table of Contents](#table-of-contents)
 - [What is 'Envelope' and how I came up with the idea for it](#what-is-envelope-and-how-i-came-up-with-the-idea-for-it)
 - [Determining the requirements](#determining-the-requirements)
 - [Components and tools](#components-and-tools)
