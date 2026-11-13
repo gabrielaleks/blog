@@ -32,6 +32,17 @@
     th {
         background: v.$backgroundDarker;
     }
+
+    // Optional per-table column widths. Wrap a markdown table in
+    // <div class="table-widths" style="--c1: 15%; --c3: 20%"> (blank lines
+    // around the table) and set --c1..--c6 for the columns you want to size.
+    .table-widths {
+        @for $i from 1 through 6 {
+            th:nth-child(#{$i}) {
+                width: var(--c#{$i}, auto);
+            }
+        }
+    }
 }
 
 .postMetadata {
